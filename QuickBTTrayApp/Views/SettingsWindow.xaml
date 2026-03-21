@@ -145,8 +145,8 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <RadioButton Content="UI"
-                                 IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
+                    <RadioButton Content="API"
+                                 IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=API, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
                                  Padding="5,2"/>
@@ -162,8 +162,8 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <RadioButton Content="API"
-                                 IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=API, Mode=TwoWay}"
+                    <RadioButton Content="UI"
+                                 IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
                                  Padding="5,2"/>
@@ -176,7 +176,6 @@
                     <ColumnDefinition Width="78" SharedSizeGroup="SettingsLabel"/>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsPrimaryOption"/>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsSecondaryOption"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                            Text="Disconnect via:"
@@ -193,14 +192,14 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <RadioButton Content="UI (Rec.)"
-                                 IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
+                    <RadioButton Content="HCI"
+                                 IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=HCI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
                                  Padding="5,2">
                         <RadioButton.ToolTip>
                             <ToolTip>
-                                <TextBlock>UI option recommended as Windows API doesn&apos;t<LineBreak/>allow complete device disconnect</TextBlock>
+                                <TextBlock>Sends low-level HCI Disconnect command<LineBreak/>to fully drop Bluetooth link (default, most reliable).</TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>
@@ -216,31 +215,14 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                    <RadioButton Content="API"
-                                 IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=API, Mode=TwoWay}"
-                                 Foreground="{DynamicResource MenuForeground}"
-                                 VerticalAlignment="Center"
-                                 Padding="5,2"/>
-                </Border>
-                <Border Grid.Column="3" Margin="0,1" CornerRadius="4">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <RadioButton Content="HCI (exp.)"
-                                 IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=HCI, Mode=TwoWay}"
+                    <RadioButton Content="UI"
+                                 IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
                                  Padding="5,2">
                         <RadioButton.ToolTip>
                             <ToolTip>
-                                <TextBlock>Experimental: sends a low-level HCI Disconnect<LineBreak/>command to the radio driver. May fully disconnect<LineBreak/>the device in Windows Bluetooth Settings.</TextBlock>
+                                <TextBlock>Uses Settings UI Automation for graceful disconnect</TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>

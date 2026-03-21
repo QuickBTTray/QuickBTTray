@@ -12,6 +12,7 @@ namespace QuickBTTrayApp.Services.Api
     public sealed class BluetoothApiService : IBluetoothDeviceDiscovery, IBluetoothConnectPath, IBluetoothDisconnectPath
     {
         private const int ErrorMoreData = 234;
+        private const int ErrorNotFound = 1168;
         private static readonly Guid HandsfreeServiceGuid = new("0000111e-0000-1000-8000-00805f9b34fb");
         private static readonly Guid AudioSinkServiceGuid = new("0000110b-0000-1000-8000-00805f9b34fb");
         private static readonly TimeSpan InstalledServicesCacheTtl = TimeSpan.FromSeconds(45);
@@ -74,7 +75,12 @@ namespace QuickBTTrayApp.Services.Api
         public Task<DeviceToggleResult> DisconnectAsync(string deviceName, string deviceAddress)
             => Task.Run(() =>
             {
+                var sw = Stopwatch.StartNew();
                 var results = SetServiceStates([deviceAddress], enable: false);
+                sw.Stop();
+                var outcome = results.Count > 0 ? results[0].Outcome.ToString() : "NoResult";
+                Debug.WriteLine($"[API-DISCONNECT] {deviceAddress} finished in {sw.ElapsedMilliseconds} ms, outcome={outcome}");
+
                 return results.Count > 0
                     ? results[0]
                     : new DeviceToggleResult(deviceName, deviceAddress, ToggleOutcome.Failed, "No result.");
@@ -137,6 +143,14 @@ namespace QuickBTTrayApp.Services.Api
                         Debug.WriteLine($"[API-STATE] retry succeeded, address={address}, guid={g}, disableResult={dr}");
                         return true;
                     }
+
+                    // Disconnect should be idempotent: "not found" means the service is already disabled.
+                    if (r == ErrorNotFound)
+                    {
+                        Debug.WriteLine($"[API-STATE] already-disabled, address={address}, guid={g}, win32={r}");
+                        return true;
+                    }
+
                     return false;
                 })).ToList();
 
@@ -150,12 +164,19 @@ namespace QuickBTTrayApp.Services.Api
                     InvalidateInstalledServicesCache(address);
                 }
 
+                if (!enable && ok && TryGetCurrentConnectionState(address, out var stillConnected) && stillConnected)
+                {
+                    ok = false;
+                }
+
                 var outcome = ok
                     ? (enable ? ToggleOutcome.Connected : ToggleOutcome.Disconnected)
                     : ToggleOutcome.Failed;
                 var msg = ok
                     ? (enable ? "Audio services enabled." : "Audio services disabled.")
-                    : "Service-state change failed.";
+                    : (!enable
+                        ? "Audio services may be disabled, but device is still connected in Windows. Use UI or HCI disconnect for full link drop."
+                        : "Service-state change failed.");
 
                 Debug.WriteLine($"[API-STATE] result address={address}, outcome={outcome}, msg={msg}");
 
@@ -179,6 +200,24 @@ namespace QuickBTTrayApp.Services.Api
             }
 
             return map;
+        }
+
+        private static bool TryGetCurrentConnectionState(string address, out bool isConnected)
+        {
+            foreach (var info in EnumerateDevices())
+            {
+                var current = FormatAddress(info.Address);
+                if (!string.Equals(current, address, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                isConnected = info.fConnected != 0;
+                return true;
+            }
+
+            isConnected = false;
+            return false;
         }
 
         private List<Guid> GetServiceGuids(string address, BLUETOOTH_DEVICE_INFO info)

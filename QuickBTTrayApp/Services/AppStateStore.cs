@@ -7,11 +7,11 @@ namespace QuickBTTrayApp.Services
     {
         public List<string> SelectedDeviceAddresses { get; init; } = [];
         public bool EnableNotifications { get; set; } = true;
-        public bool UseUiaConnect     { get; set; } = true;
-        /// <summary>When true, connect uses the HCI service path (experimental 3rd path).</summary>
-        public bool UseUiaDisconnect  { get; set; } = true;
-        /// <summary>When true, disconnect uses the HCI IOCTL path (experimental 3rd path).</summary>
-        public bool UseHciDisconnect  { get; set; } = false;
+        public bool UseUiaConnect     { get; set; } = false;
+        /// <summary>When true, disconnect uses the UI Automation path (otherwise HCI).</summary>
+        public bool UseUiaDisconnect  { get; set; } = false;
+        /// <summary>When true, disconnect uses the HCI IOCTL path (default, most reliable).</summary>
+        public bool UseHciDisconnect  { get; set; } = true;
         public static AppState CreateDefault() => new();
     }
 
