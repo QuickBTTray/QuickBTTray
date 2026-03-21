@@ -1,6 +1,8 @@
 
 
-# QuickBTTray ﻿![QuickBTTray Icon](sources/icon-app/icon.png)
+<img src="sources/icon-app/icon.png" alt="QuickBTTray Icon" width="80"/>
+
+# QuickBTTray
 
 A lightweight Windows tray application for quick management of Bluetooth audio devices.
 
