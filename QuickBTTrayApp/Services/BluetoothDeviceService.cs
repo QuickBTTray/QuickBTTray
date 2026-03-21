@@ -1,12 +1,5 @@
-namespace QuickBTTrayApp.Services
-{
-    public interface IBluetoothDeviceService
-    {
-        // Placeholder for methods to find, connect, and disconnect devices
-    }
-
-    public class BluetoothDeviceService : IBluetoothDeviceService
-    {
-        // Implementation will be based on BT-cpl_shortcut logic
-    }
-}
+// This stub has been superseded.
+// See Services/Contracts/ for clean interfaces.
+// See Services/Api/BluetoothApiService.cs for the Win32 (API) implementation.
+// See Services/Ui/BluetoothUiaService.cs  for the UI Automation implementation.
+namespace QuickBTTrayApp.Services { }

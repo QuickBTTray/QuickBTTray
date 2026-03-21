@@ -7,10 +7,13 @@ namespace QuickBTTrayApp.ViewModels
 {
     public class BluetoothDeviceViewModel : INotifyPropertyChanged
     {
+        private readonly Func<BluetoothDeviceViewModel, Task> _toggleAction;
         private bool _isConnected;
         private bool _isSelected;
 
-        public string Name { get; set; }
+        public string Address { get; }
+        public string RawName { get; }   // actual BT device name — used for UIA lookups
+        public string Name    { get; }   // display name — may include address suffix for duplicates
 
         public bool IsConnected
         {
@@ -31,22 +34,30 @@ namespace QuickBTTrayApp.ViewModels
         public string ConnectionButtonLabel => IsConnected ? "Disconnect" : "Connect";
 
         public ICommand ToggleConnectionCommand { get; }
-        public ICommand ToggleSelectedCommand { get; }
+        public ICommand ToggleSelectedCommand   { get; }
 
-        public BluetoothDeviceViewModel(BluetoothAudioDevice device)
+        public BluetoothDeviceViewModel(
+            BluetoothAudioDevice device,
+            string displayName,
+            Func<BluetoothDeviceViewModel, Task> toggleAction)
         {
-            Name = device.Name;
-            IsConnected = device.IsConnected;
-            IsSelected = device.IsSelected;
-            ToggleConnectionCommand = new RelayCommand(_ => ToggleConnection());
+            Address       = device.Address;
+            RawName       = device.Name;
+            Name          = displayName;
+            IsConnected   = device.IsConnected;
+            IsSelected    = device.IsSelected;
+            _toggleAction = toggleAction;
+
+            ToggleConnectionCommand = new RelayCommand(async _ =>
+            {
+                try { await _toggleAction(this); }
+                catch { /* exceptions handled in TrayMenuViewModel */ }
+            });
             ToggleSelectedCommand = new RelayCommand(_ => IsSelected = !IsSelected);
         }
 
-        // Stub — will call BluetoothDeviceService in the business logic phase
-        private void ToggleConnection() { IsConnected = !IsConnected; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
