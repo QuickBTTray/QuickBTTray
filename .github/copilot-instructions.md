@@ -22,16 +22,17 @@
   - **The tray icon opens a custom context menu with this layout:**
   ```
   +-------------------------------------------------------------+
+  | Title text                                          [Exit]  |
+  |-------------------------------------------------------------|
   | [1] BT Device 3   [2 status icon]   [3 Connect/Disconnect]  |
   | [1] BT Device 2   [2 status icon]   [3 Connect/Disconnect]  |
   | [1] BT Device 1   [2 status icon]   [3 Connect/Disconnect]  |
   |-------------------------------------------------------------|
-  | Connect by:    (•) UI   ( ) API                             |
-  | Disconnect by: (•) UI   ( ) API                             |
+  | Connect by:    ( ) API   (•) UI                             |
+  | Disconnect by: ( ) API   (•) UI (Rec.)                      |
   |-------------------------------------------------------------|
   | Open Bluetooth & Devices Settings                           |
-  | Exit                                                        |
-  +-------------------------------------------------------------+
+  |-------------------------------------------------------------|
   ```
   - **Bluetooth Devices Section:**
     - Each row: [ ] Checkbox (select/enable for batch connect/disconnect), [status icon] (shows connected/disconnected), [Connect] and [Disconnect] buttons for manual control.
