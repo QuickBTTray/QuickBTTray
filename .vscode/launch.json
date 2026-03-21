@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "QuickBTTrayApp (F5)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build QuickBTTrayApp",
+      "program": "${workspaceFolder}/QuickBTTrayApp/bin/Debug/net8.0-windows/QuickBTTray.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/QuickBTTrayApp",
+      "stopAtEntry": false,
+      "console": "internalConsole"
+    }
+  ]
+}
