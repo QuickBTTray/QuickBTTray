@@ -10,7 +10,9 @@ A lightweight Windows tray application for quick management of Bluetooth audio d
 
 I created this app because AirPods don’t support automatic switching between an iPhone and a PC. While they stay paired to both, manually connecting through Windows 11 Bluetooth menus several times a day quickly becomes tedious. This app minimizes that friction: a simple left-click on the tray icon instantly toggles the connection of the devices you’ve selected in the apps menu.
 
-Note that due to Windows limitations, fully disconnecting a Bluetooth device via API will prevent it from reconnecting properly. To avoid this, the app only disconnects the audio and microphone rather than the device itself. For a complete connection toggle, I recommend using the automated UI navigation setting instead, which works as intended.
+Note that due to limitations in Windows Bluethooth API exposed to 3rd parties, fully disconnecting a device will prevent it from reconnecting properly in Windows Setting > Bluethooth & Devices. To avoid this, the app only disconnects the audio and microphone rather than the device itself.
+
+The workaround to this is to not use the API calls and instead rely on Microsoft UI Automation (UIA) to navigation to the settings panel and toggle the Connect/Disconnect button. This works as intended and is my recommended solution.
 
 ## Features
 - Lives in the system tray with a modern, theme-aware menu
