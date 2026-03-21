@@ -13,9 +13,8 @@ namespace QuickBTTrayApp.Services.Api
         private const int ErrorMoreData = 234;
         private static readonly Guid HandsfreeServiceGuid = new("0000111e-0000-1000-8000-00805f9b34fb");
         private static readonly Guid AudioSinkServiceGuid  = new("0000110b-0000-1000-8000-00805f9b34fb");
-        private readonly AppLogger _logger;
 
-        public BluetoothApiService(AppLogger logger) => _logger = logger;
+           public BluetoothApiService() { }
 
         // ── IBluetoothDeviceDiscovery ────────────────────────────────────────
         public IReadOnlyList<BluetoothAudioDevice> GetAudioDevices()
@@ -42,7 +41,6 @@ namespace QuickBTTrayApp.Services.Api
                 .OrderBy(d => d.Name, StringComparer.CurrentCultureIgnoreCase)
                 .ThenBy(d => d.Address)
                 .ToList();
-            _logger.Info($"Discovered {sorted.Count} paired audio device(s).");
             return sorted;
         }
 
@@ -50,7 +48,6 @@ namespace QuickBTTrayApp.Services.Api
         public Task<DeviceToggleResult> ConnectAsync(string deviceName, string deviceAddress)
             => Task.Run(() =>
             {
-                _logger.Info($"API connect: {deviceName} ({deviceAddress}).");
                 var results = SetServiceStates([deviceAddress], enable: true);
                 return results.Count > 0 ? results[0]
                     : new DeviceToggleResult(deviceName, deviceAddress, ToggleOutcome.Failed, "No result.");
@@ -60,7 +57,6 @@ namespace QuickBTTrayApp.Services.Api
         public Task<DeviceToggleResult> DisconnectAsync(string deviceName, string deviceAddress)
             => Task.Run(() =>
             {
-                _logger.Info($"API disconnect: {deviceName} ({deviceAddress}).");
                 var results = SetServiceStates([deviceAddress], enable: false);
                 return results.Count > 0 ? results[0]
                     : new DeviceToggleResult(deviceName, deviceAddress, ToggleOutcome.Failed, "No result.");
@@ -96,9 +92,8 @@ namespace QuickBTTrayApp.Services.Api
                     if (r == 0) continue;
 
                     var err = Marshal.GetLastWin32Error();
-                    _logger.Warn($"SetServiceState({(enable ? "enable" : "disable")}) failed for {device.Name}/{g}. Win32={err}.");
 
-                    if (enable)
+                       if (enable)
                     {
                         // Retry: disable first, then re-enable (matches WinForms reference logic)
                         var dc = g; BluetoothSetServiceState(IntPtr.Zero, ref info, ref dc, 0);
@@ -114,7 +109,6 @@ namespace QuickBTTrayApp.Services.Api
                     ? (enable ? "Audio services enabled." : "Audio services disabled.")
                     : "Service-state change failed.";
                 results.Add(new(device.Name, device.Address, outcome, msg));
-                _logger.Info($"API {(enable ? "connect" : "disconnect")} result: {device.Name} → {outcome}.");
             }
             return results;
         }

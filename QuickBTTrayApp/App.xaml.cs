@@ -21,11 +21,10 @@ namespace QuickBTTrayApp
         {
             base.OnStartup(e);
 
-            var logger         = new AppLogger();
-            var stateStore     = new AppStateStore(logger);
-            var startupService = new StartupService(logger);
-            var apiService     = new BluetoothApiService(logger);
-            var uiaService     = new BluetoothUiaService(logger);
+            var stateStore     = new AppStateStore();
+            var startupService = new StartupService();
+            var apiService     = new BluetoothApiService();
+            var uiaService     = new BluetoothUiaService();
 
             _viewModel = new TrayMenuViewModel(
                 discovery:     apiService,
@@ -33,8 +32,7 @@ namespace QuickBTTrayApp
                 uiaConnect:    uiaService,
                 apiDisconnect: apiService,
                 uiaDisconnect: uiaService,
-                stateStore:    stateStore,
-                logger:        logger);
+                   stateStore:    stateStore);
 
             var settingsViewModel = new SettingsViewModel(startupService);
             _settingsWindow = new SettingsWindow(settingsViewModel);
@@ -77,7 +75,6 @@ namespace QuickBTTrayApp
                 });
             };
 
-            logger.Info("Application started.");
         }
 
         protected override void OnExit(ExitEventArgs e)

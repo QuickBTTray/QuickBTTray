@@ -11,9 +11,8 @@ namespace QuickBTTrayApp.Services
     {
         private const string RegistryKeyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
         private const string AppName         = "QuickBTTray";
-        private readonly AppLogger _logger;
 
-        public StartupService(AppLogger logger) => _logger = logger;
+           public StartupService() { }
 
         /// <summary>Returns true if the Run entry currently exists and points to this EXE.</summary>
         public bool IsEnabled()
@@ -24,7 +23,7 @@ namespace QuickBTTrayApp.Services
                 var value = key?.GetValue(AppName) as string;
                 return !string.IsNullOrEmpty(value);
             }
-            catch (Exception ex) { _logger.Error("StartupService: failed to read registry.", ex); return false; }
+               catch { return false; }
         }
 
         /// <summary>Adds or removes the HKCU Run entry.</summary>
@@ -40,15 +39,13 @@ namespace QuickBTTrayApp.Services
                                   ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName
                                   ?? string.Empty;
                     key.SetValue(AppName, $"\"{exePath}\"");
-                    _logger.Info($"StartupService: enabled (path={exePath}).");
                 }
                 else
                 {
                     key.DeleteValue(AppName, throwOnMissingValue: false);
-                    _logger.Info("StartupService: disabled.");
                 }
             }
-            catch (Exception ex) { _logger.Error("StartupService: failed to write registry.", ex); }
+               catch { }
         }
     }
 }

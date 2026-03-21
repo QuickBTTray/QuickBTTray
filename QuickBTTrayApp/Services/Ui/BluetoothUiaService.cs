@@ -10,12 +10,10 @@ namespace QuickBTTrayApp.Services.Ui
     /// </summary>
     public sealed class BluetoothUiaService : IBluetoothConnectPath, IBluetoothDisconnectPath
     {
-        private readonly AppLogger _logger;
-        public BluetoothUiaService(AppLogger logger) => _logger = logger;
+           public BluetoothUiaService() { }
 
         public async Task<DeviceToggleResult> ConnectAsync(string deviceName, string deviceAddress)
         {
-            _logger.Info($"UIA connect: {deviceName} ({deviceAddress}).");
             var ok = await InvokeDeviceActionAsync(deviceName, "Connect");
             return ok
                 ? new(deviceName, deviceAddress, ToggleOutcome.Connected,    "Connected via Settings UI.")
@@ -24,7 +22,6 @@ namespace QuickBTTrayApp.Services.Ui
 
         public async Task<DeviceToggleResult> DisconnectAsync(string deviceName, string deviceAddress)
         {
-            _logger.Info($"UIA disconnect: {deviceName} ({deviceAddress}).");
             var ok = await InvokeDeviceActionAsync(deviceName, "Disconnect");
             return ok
                 ? new(deviceName, deviceAddress, ToggleOutcome.Disconnected, "Disconnected via Settings UI.")
@@ -40,29 +37,26 @@ namespace QuickBTTrayApp.Services.Ui
                     Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
 
                 var win = await WaitForSettingsWindowAsync(8000);
-                if (win == null) { _logger.Warn("UIA: Timed out waiting for Settings window."); return false; }
+                   if (win == null) return false;
 
                 await Task.Delay(1500);
 
                 var deviceEl = await FindElementByNameAsync(win, deviceName, 6000);
-                if (deviceEl == null) { _logger.Warn($"UIA: Could not find '{deviceName}' in Settings."); return false; }
+                   if (deviceEl == null) return false;
 
                 var btn = SearchForButton(win, deviceEl, action);
                 if (btn == null)
                 {
-                    _logger.Info($"UIA: '{action}' button not visible — expanding device row.");
                     TryInvokeElement(deviceEl);
                     await Task.Delay(700);
                     btn = SearchForButton(win, deviceEl, action);
                 }
                 if (btn == null)
                 {
-                    _logger.Warn($"UIA: Could not find '{action}' button for '{deviceName}'.");
                     return false;
                 }
 
                 TryInvokeElement(btn);
-                _logger.Info($"UIA: '{action}' invoked for '{deviceName}'.");
 
                 if (openedByApp)
                 {
@@ -72,11 +66,11 @@ namespace QuickBTTrayApp.Services.Ui
                         win.SetFocus();
                         if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern cp) cp.Close();
                     }
-                    catch (Exception ex) { _logger.Warn($"UIA: Failed to close Settings: {ex.Message}"); }
+                       catch { }
                 }
                 return true;
             }
-            catch (Exception ex) { _logger.Error($"UIA: Exception during '{action}' for '{deviceName}'.", ex); return false; }
+               catch { return false; }
         }
 
         private async Task<AutomationElement?> WaitForSettingsWindowAsync(int timeoutMs)
@@ -118,7 +112,7 @@ namespace QuickBTTrayApp.Services.Ui
                 return root.FindFirst(TreeScope.Descendants,
                     new PropertyCondition(AutomationElement.NameProperty, name, PropertyConditionFlags.IgnoreCase));
             }
-            catch (Exception ex) { _logger.Warn($"UIA: FindElementByName('{name}'): {ex.Message}"); return null; }
+            catch (Exception ex) { return null; }
         }
 
         private AutomationElement? SearchForButton(AutomationElement win, AutomationElement deviceEl, string btnName)

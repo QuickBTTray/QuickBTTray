@@ -15,12 +15,10 @@ namespace QuickBTTrayApp.Services
     {
         private static readonly JsonSerializerOptions SerializerOptions = new() { WriteIndented = true };
         private readonly string _stateFilePath;
-        private readonly AppLogger _logger;
 
-        public AppStateStore(AppLogger logger)
-        {
-            _logger = logger;
-            var dir = Path.Combine(
+           public AppStateStore()
+           {
+               var dir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "QuickBTTray");
             _stateFilePath = Path.Combine(dir, "tray-state.json");
@@ -32,17 +30,12 @@ namespace QuickBTTrayApp.Services
             {
                 if (!File.Exists(_stateFilePath))
                 {
-                    _logger.Info("State file not found. Using default state.");
                     return AppState.CreateDefault();
                 }
                 var json = File.ReadAllText(_stateFilePath);
                 return JsonSerializer.Deserialize<AppState>(json, SerializerOptions) ?? AppState.CreateDefault();
             }
-            catch (Exception ex)
-            {
-                _logger.Error("Failed to load state. Using default state.", ex);
-                return AppState.CreateDefault();
-            }
+               catch { return AppState.CreateDefault(); }
         }
 
         public void Save(AppState state)
@@ -52,7 +45,7 @@ namespace QuickBTTrayApp.Services
                 Directory.CreateDirectory(Path.GetDirectoryName(_stateFilePath)!);
                 File.WriteAllText(_stateFilePath, JsonSerializer.Serialize(state, SerializerOptions));
             }
-            catch (Exception ex) { _logger.Error("Failed to save state.", ex); }
+               catch { }
         }
     }
 }

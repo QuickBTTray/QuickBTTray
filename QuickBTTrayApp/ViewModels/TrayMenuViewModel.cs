@@ -19,7 +19,6 @@ namespace QuickBTTrayApp.ViewModels
         private readonly IBluetoothDisconnectPath  _apiDisconnect;
         private readonly IBluetoothDisconnectPath  _uiaDisconnect;
         private readonly AppStateStore             _stateStore;
-        private readonly AppLogger                 _logger;
         private AppState         _appState;
         private bool             _isBusy;
         private ConnectionMethod _connectBy;
@@ -70,8 +69,7 @@ namespace QuickBTTrayApp.ViewModels
             IBluetoothConnectPath     uiaConnect,
             IBluetoothDisconnectPath  apiDisconnect,
             IBluetoothDisconnectPath  uiaDisconnect,
-            AppStateStore             stateStore,
-            AppLogger                 logger)
+               AppStateStore             stateStore)
         {
             _discovery     = discovery;
             _apiConnect    = apiConnect;
@@ -79,7 +77,6 @@ namespace QuickBTTrayApp.ViewModels
             _apiDisconnect = apiDisconnect;
             _uiaDisconnect = uiaDisconnect;
             _stateStore    = stateStore;
-            _logger        = logger;
 
             _appState     = stateStore.Load();
             _connectBy    = _appState.UseUiaConnect    ? ConnectionMethod.UI : ConnectionMethod.API;
@@ -99,7 +96,7 @@ namespace QuickBTTrayApp.ViewModels
         {
             IReadOnlyList<BluetoothAudioDevice> raw;
             try   { raw = await Task.Run(() => _discovery.GetAudioDevices()); }
-            catch (Exception ex) { _logger.Error("Failed to enumerate Bluetooth audio devices.", ex); raw = []; }
+               catch { raw = []; }
 
             // Prune selected addresses that no longer exist
             var active = raw.Select(d => d.Address).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -125,7 +122,6 @@ namespace QuickBTTrayApp.ViewModels
                 vm.PropertyChanged += OnDeviceSelectionChanged;
                 Devices.Add(vm);
             }
-            _logger.Info($"Device list refreshed: {Devices.Count} audio device(s).");
         }
 
         /// <summary>LMB single-click: batch connect/disconnect all selected devices.</summary>
@@ -153,7 +149,6 @@ namespace QuickBTTrayApp.ViewModels
                 if (selected.Count == 0) return;
 
                 bool allConnected = selected.All(d => d.IsConnected);
-                _logger.Info($"LMB single-click: {(allConnected ? "disconnect" : "connect")} {selected.Count} device(s).");
 
                 var results = new List<DeviceToggleResult>();
                 foreach (var d in selected)
@@ -164,7 +159,7 @@ namespace QuickBTTrayApp.ViewModels
                 HandleResults(results);
                 await RefreshDevicesAsync();
             }
-            catch (Exception ex) { _logger.Error("LMB single-click failed.", ex); NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
+               catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
             finally { _isBusy = false; }
         }
 
@@ -181,7 +176,7 @@ namespace QuickBTTrayApp.ViewModels
                 HandleResults([result]);
                 await RefreshDevicesAsync();
             }
-            catch (Exception ex) { _logger.Error($"Toggle failed for {vm.Name}.", ex); NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
+               catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
             finally { _isBusy = false; }
         }
 
@@ -220,11 +215,7 @@ namespace QuickBTTrayApp.ViewModels
             {
                 var msg = $"Failed: {string.Join(", ", failed.Select(r => r.DeviceName))}. {failed[0].Message}";
                 NotifyRequested?.Invoke("QuickBTTray", msg);
-                _logger.Warn(msg);
             }
-            _logger.Info($"Results: conn={results.Count(r => r.Outcome == ToggleOutcome.Connected)}, " +
-                         $"disc={results.Count(r => r.Outcome == ToggleOutcome.Disconnected)}, " +
-                         $"fail={failed.Count}.");
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
