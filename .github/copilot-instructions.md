@@ -1,3 +1,8 @@
+## Reference Implementation
+- The `BT-cpl_shortcut` project in this workspace contains a fully working WinForms version of the app.
+- Its logic for finding, listing, connecting, and disconnecting Bluetooth audio devices (both API and UI paths) is tested and should be used as a blueprint/guide for the business logic in this WPF UI app.
+- When implementing or refactoring device management, refer to the code in `BT-cpl_shortcut` for correct logic and edge case handling.
+
 # Copilot Instructions: Tray Icon App for Bluetooth Audio Devices
 
 ## Project Overview
@@ -8,21 +13,22 @@
 ## UI/UX Requirements
 - **Framework:** WPF with WPF UI library (using .NET 8 LTS recommended).
 - **Tray Icon:**
-  - App lives in the system tray.
+  - App lives in the system tray. Use the "BT-cpl_shortcut.ico" icon for the tray.
   - Right-clicking the tray icon opens a custom menu.
   - Single LMB clicking the tray icon should connect or diconnect the devices that are marked by check boxes in the custom menu.
   - Double LMB clicking the tray icon should should open Window Bluteooth & Devices settings page.
+  - Because we can both single and double LMB click the tray icon, we should have a short delay (e.g. 300ms) after the first click to determine if it's a single or double click before executing the action.
 - **Menu Layout:**
   - **The tray icon opens a custom context menu with this layout:**
   ```
-  +---------------------------------------------------------------+
-  | [ ] BT Device 3   [status icon]   [Connect] [Disconnect]      |
-  | [ ] BT Device 2   [status icon]   [Connect] [Disconnect]      |
-  | [ ] BT Device 1   [status icon]   [Connect] [Disconnect]      |
-  |--------------------------------------------------------------|
-  | Connect by:    (•) UI   ( ) API                              |
-  | Disconnect by: (•) UI   ( ) API                              |
-  |--------------------------------------------------------------|
+  +-------------------------------------------------------------+
+  | [1] BT Device 3   [2 status icon]   [3 Connect/Disconnect]  |
+  | [1] BT Device 2   [2 status icon]   [3 Connect/Disconnect]  |
+  | [1] BT Device 1   [2 status icon]   [3 Connect/Disconnect]  |
+  |-------------------------------------------------------------|
+  | Connect by:    (•) UI   ( ) API                             |
+  | Disconnect by: (•) UI   ( ) API                             |
+  |-------------------------------------------------------------|
   | Exit                                                        |
   +-------------------------------------------------------------+
   ```
@@ -35,7 +41,7 @@
   - **Exit Option:**
     - Simple menu item to close the app.
   - **Bluetooth Devices Section:**
-    - Each row: [1] Checkbox (select/enable), selectd ones are the ones we will try and connect/disconnect when single LMB on try icon, [2] Status icon (connected/disconnected), shows wheter the BT audio device is connected/disconnected, [3] Connect/Disconnect button, will manually connect or disconnect the device.
+    - Each row: [1] Checkbox (select/enable), selected ones are the ones we will try and connect/disconnect when single LMB on tray icon, [2] Status icon (connected/disconnected), shows whether the BT audio device is connected/disconnected, [3] Connect/Disconnect button, will manually connect or disconnect the device.
   - **Divider:**
     - Horizontal line separates devices from settings.
   - **Settings Section:**
