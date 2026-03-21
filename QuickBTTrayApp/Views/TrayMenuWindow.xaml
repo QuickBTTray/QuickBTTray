@@ -9,7 +9,8 @@
         Background="Transparent"
         Topmost="True">
 
-    <Border CornerRadius="8"
+    <Border Margin="8"
+            CornerRadius="8"
             Padding="0,6"
             Background="{DynamicResource MenuBackground}">
         <Border.Resources>
@@ -28,7 +29,6 @@
         <Border.Effect>
             <DropShadowEffect Color="Black" BlurRadius="16" ShadowDepth="3" Opacity="0.4"/>
         </Border.Effect>
-
         <StackPanel>
 
             <!-- ── Header: section title + gear icon + Exit button ── -->
