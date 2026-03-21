@@ -112,7 +112,7 @@ namespace QuickBTTrayApp.Services.Ui
                 return root.FindFirst(TreeScope.Descendants,
                     new PropertyCondition(AutomationElement.NameProperty, name, PropertyConditionFlags.IgnoreCase));
             }
-            catch (Exception ex) { return null; }
+            catch { return null; }
         }
 
         private AutomationElement? SearchForButton(AutomationElement win, AutomationElement deviceEl, string btnName)
