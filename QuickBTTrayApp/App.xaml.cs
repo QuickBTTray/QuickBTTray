@@ -6,6 +6,8 @@ using QuickBTTrayApp.Services.Api;
 using QuickBTTrayApp.Services.Ui;
 using QuickBTTrayApp.ViewModels;
 using QuickBTTrayApp.Views;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace QuickBTTrayApp
 {
@@ -16,6 +18,10 @@ namespace QuickBTTrayApp
         private TrayMenuViewModel _viewModel       = null!;
         private SettingsWindow    _settingsWindow  = null!;
         private DispatcherTimer   _singleClickTimer = null!;
+        private DispatcherTimer   _busyBlinkTimer   = null!;
+        private ImageSource       _defaultTrayIconSource = null!;
+        private ImageSource       _connectingTrayIconSource = null!;
+        private bool              _showConnectingIcon;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -39,10 +45,20 @@ namespace QuickBTTrayApp
 
             _trayIcon = (TaskbarIcon)FindResource("TrayIcon");
             _trayMenu = new TrayMenuWindow(_viewModel, _settingsWindow);
+            _defaultTrayIconSource = _trayIcon.IconSource;
+            _connectingTrayIconSource = BitmapFrame.Create(
+                new Uri("pack://application:,,,/Views/Assets/icon-connecting.ico", UriKind.Absolute));
+            _busyBlinkTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+            _busyBlinkTimer.Tick += (s, args) => ToggleBusyTrayIcon();
 
             // Balloon notifications from ViewModel
             _viewModel.NotifyRequested += (title, msg) =>
                 _trayIcon.ShowBalloonTip(title, msg, BalloonIcon.Info);
+            _viewModel.BusyStateChanged += isBusy =>
+            {
+                if (isBusy) StartBusyTrayAnimation();
+                else StopBusyTrayAnimation();
+            };
 
             // RMB: refresh device list then show menu
             _trayIcon.TrayRightMouseUp += async (s, args) =>
@@ -79,11 +95,34 @@ namespace QuickBTTrayApp
 
         protected override void OnExit(ExitEventArgs e)
         {
+            _busyBlinkTimer?.Stop();
             _singleClickTimer?.Stop();
             _trayIcon?.Dispose();
             _trayMenu?.Close();
             _settingsWindow?.Close();
             base.OnExit(e);
+        }
+
+        private void StartBusyTrayAnimation()
+        {
+            _showConnectingIcon = true;
+            _trayIcon.IconSource = _connectingTrayIconSource;
+            _busyBlinkTimer.Start();
+        }
+
+        private void StopBusyTrayAnimation()
+        {
+            _busyBlinkTimer.Stop();
+            _showConnectingIcon = false;
+            _trayIcon.IconSource = _defaultTrayIconSource;
+        }
+
+        private void ToggleBusyTrayIcon()
+        {
+            _showConnectingIcon = !_showConnectingIcon;
+            _trayIcon.IconSource = _showConnectingIcon
+                ? _connectingTrayIconSource
+                : _defaultTrayIconSource;
         }
     }
 }

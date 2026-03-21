@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>QuickBTTray</AssemblyName>
     <RootNamespace>QuickBTTrayApp</RootNamespace>
+    <ApplicationIcon>Views\Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,7 @@
 
   <ItemGroup>
     <Resource Include="Views\Assets\icon.ico" />
+    <Resource Include="Views\Assets\icon-connecting.ico" />
     <Resource Include="Views\Assets\device-connected.png" />
     <Resource Include="Views\Assets\device-disconnected.png" />
   </ItemGroup>

@@ -28,6 +28,7 @@ namespace QuickBTTrayApp.ViewModels
 
         /// <summary>Raised when a tray balloon notification should be shown.</summary>
         public event Action<string, string>? NotifyRequested;
+        public event Action<bool>? BusyStateChanged;
 
         public ConnectionMethod ConnectBy
         {
@@ -138,7 +139,7 @@ namespace QuickBTTrayApp.ViewModels
                 return;
             }
 
-            _isBusy = true;
+            SetBusy(true);
             try
             {
                 var fresh    = await Task.Run(() => _discovery.GetAudioDevices());
@@ -160,14 +161,14 @@ namespace QuickBTTrayApp.ViewModels
                 await RefreshDevicesAsync();
             }
                catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
-            finally { _isBusy = false; }
+            finally { SetBusy(false); }
         }
 
         // ── Internal ─────────────────────────────────────────────────────────
         private async Task ToggleDeviceAsync(BluetoothDeviceViewModel vm)
         {
             if (_isBusy) { NotifyRequested?.Invoke("QuickBTTray", "A Bluetooth action is already running."); return; }
-            _isBusy = true;
+            SetBusy(true);
             try
             {
                 var result = vm.IsConnected
@@ -177,7 +178,14 @@ namespace QuickBTTrayApp.ViewModels
                 await RefreshDevicesAsync();
             }
                catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
-            finally { _isBusy = false; }
+            finally { SetBusy(false); }
+        }
+
+        private void SetBusy(bool isBusy)
+        {
+            if (_isBusy == isBusy) return;
+            _isBusy = isBusy;
+            BusyStateChanged?.Invoke(isBusy);
         }
 
         private void OnDeviceSelectionChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
