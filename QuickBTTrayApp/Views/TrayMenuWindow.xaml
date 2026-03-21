@@ -31,7 +31,7 @@
 
         <StackPanel>
 
-            <!-- ── Header: section title + Exit button ── -->
+            <!-- ── Header: section title + gear icon + Exit button ── -->
             <Grid Margin="8,4,8,4">
                 <TextBlock Text="BT Audio Devices"
                            Foreground="{DynamicResource MenuForeground}"
@@ -39,12 +39,57 @@
                            FontSize="12"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Left"/>
-                <Button Content="Exit"
-                        Command="{Binding ExitCommand}"
-                        HorizontalAlignment="Right"
-                        Cursor="Hand"
-                        Padding="10,4"
-                        Style="{DynamicResource MenuButtonStyle}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Settings gear button -->
+                    <Button x:Name="GearButton"
+                            Click="GearButton_Click"
+                            ToolTip="Settings"
+                            HorizontalAlignment="Right"
+                            Cursor="Hand"
+                            Padding="7,4"
+                            Margin="0,0,4,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bd"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderThickness="1"
+                                                    BorderBrush="Transparent"
+                                                    CornerRadius="3"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource SeparatorBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SeparatorBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                        <TextBlock Text="&#x2699;"
+                                   Foreground="{DynamicResource MenuForeground}"
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+                    <Button Content="Exit"
+                            Command="{Binding ExitCommand}"
+                            HorizontalAlignment="Right"
+                            Cursor="Hand"
+                            Padding="10,4"
+                            Style="{DynamicResource MenuButtonStyle}"/>
+                </StackPanel>
             </Grid>
 
             <!-- ── Divider below header ── -->

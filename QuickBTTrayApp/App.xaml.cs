@@ -14,16 +14,18 @@ namespace QuickBTTrayApp
         private TaskbarIcon       _trayIcon        = null!;
         private TrayMenuWindow    _trayMenu        = null!;
         private TrayMenuViewModel _viewModel       = null!;
+        private SettingsWindow    _settingsWindow  = null!;
         private DispatcherTimer   _singleClickTimer = null!;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            var logger     = new AppLogger();
-            var stateStore = new AppStateStore(logger);
-            var apiService = new BluetoothApiService(logger);
-            var uiaService = new BluetoothUiaService(logger);
+            var logger         = new AppLogger();
+            var stateStore     = new AppStateStore(logger);
+            var startupService = new StartupService(logger);
+            var apiService     = new BluetoothApiService(logger);
+            var uiaService     = new BluetoothUiaService(logger);
 
             _viewModel = new TrayMenuViewModel(
                 discovery:     apiService,
@@ -34,8 +36,11 @@ namespace QuickBTTrayApp
                 stateStore:    stateStore,
                 logger:        logger);
 
+            var settingsViewModel = new SettingsViewModel(startupService);
+            _settingsWindow = new SettingsWindow(settingsViewModel);
+
             _trayIcon = (TaskbarIcon)FindResource("TrayIcon");
-            _trayMenu = new TrayMenuWindow(_viewModel);
+            _trayMenu = new TrayMenuWindow(_viewModel, _settingsWindow);
 
             // Balloon notifications from ViewModel
             _viewModel.NotifyRequested += (title, msg) =>
@@ -80,6 +85,7 @@ namespace QuickBTTrayApp
             _singleClickTimer?.Stop();
             _trayIcon?.Dispose();
             _trayMenu?.Close();
+            _settingsWindow?.Close();
             base.OnExit(e);
         }
     }

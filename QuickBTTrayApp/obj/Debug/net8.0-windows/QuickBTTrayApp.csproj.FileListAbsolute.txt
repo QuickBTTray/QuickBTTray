@@ -26,3 +26,5 @@ C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray.d
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\refint\QuickBTTray.dll
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray.pdb
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\ref\QuickBTTray.dll
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\SettingsWindow.baml
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\SettingsWindow.g.cs

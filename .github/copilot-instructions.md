@@ -22,7 +22,7 @@
   - **The tray icon opens a custom context menu with this layout:**
   ```
   +-------------------------------------------------------------+
-  | Title text                                          [Exit]  |
+  | Title text                    [settings gear icon]  [Exit]  |
   |-------------------------------------------------------------|
   | [1] BT Device 3   [2 status icon]   [3 Connect/Disconnect]  |
   | [1] BT Device 2   [2 status icon]   [3 Connect/Disconnect]  |
