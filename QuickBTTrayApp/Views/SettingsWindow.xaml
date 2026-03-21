@@ -12,11 +12,24 @@
     <Border CornerRadius="8"
             Padding="0,6"
             Background="{DynamicResource MenuBackground}">
+        <Border.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="{DynamicResource MenuBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource MenuForeground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="Placement" Value="Right"/>
+                <Setter Property="HasDropShadow" Value="True"/>
+            </Style>
+        </Border.Resources>
         <Border.Effect>
             <DropShadowEffect Color="Black" BlurRadius="16" ShadowDepth="3" Opacity="0.4"/>
         </Border.Effect>
 
-        <StackPanel MinWidth="200">
+        <StackPanel Grid.IsSharedSizeScope="True">
 
             <!-- ── Header ── -->
             <Grid Margin="8,4,8,4">
@@ -67,6 +80,113 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
+
+            <!-- ── Divider ── -->
+            <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,4,10,4"/>
+
+            <!-- ── Connect by ── -->
+            <Grid Margin="10,2,4,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="78" SharedSizeGroup="SettingsLabel"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsPrimaryOption"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsSecondaryOption"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="Connect by:"
+                           Foreground="{DynamicResource MenuForeground}"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="UI"
+                                 IsChecked="{Binding ConnectByUI, Mode=TwoWay}"
+                                 GroupName="ConnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="5,2"/>
+                </Border>
+                <Border Grid.Column="2" Margin="0,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="API"
+                                 IsChecked="{Binding ConnectByAPI, Mode=TwoWay}"
+                                 GroupName="ConnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="5,2"/>
+                </Border>
+            </Grid>
+
+            <!-- ── Disconnect by ── -->
+            <Grid Margin="10,2,4,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="78" SharedSizeGroup="SettingsLabel"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsPrimaryOption"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsSecondaryOption"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="Disconnect by:"
+                           Foreground="{DynamicResource MenuForeground}"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="UI (Rec.)"
+                                 IsChecked="{Binding DisconnectByUI, Mode=TwoWay}"
+                                 GroupName="DisconnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="5,2">
+                        <RadioButton.ToolTip>
+                            <ToolTip>
+                                <TextBlock>UI option recommended as Windows API doesn&apos;t<LineBreak/>allow complete device disconnect</TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                </Border>
+                <Border Grid.Column="2" Margin="0,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="API"
+                                 IsChecked="{Binding DisconnectByAPI, Mode=TwoWay}"
+                                 GroupName="DisconnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="5,2"/>
+                </Border>
+            </Grid>
 
         </StackPanel>
     </Border>

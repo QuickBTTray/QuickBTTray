@@ -34,7 +34,7 @@ namespace QuickBTTrayApp
                 uiaDisconnect: uiaService,
                    stateStore:    stateStore);
 
-            var settingsViewModel = new SettingsViewModel(startupService);
+            var settingsViewModel = new SettingsViewModel(startupService, _viewModel);
             _settingsWindow = new SettingsWindow(settingsViewModel);
 
             _trayIcon = (TaskbarIcon)FindResource("TrayIcon");
