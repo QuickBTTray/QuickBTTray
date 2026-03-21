@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <tb:TaskbarIcon x:Key="TrayIcon"
                             IconSource="pack://application:,,,/Views/Assets/icon.ico"
-                            ToolTipText="QuickBTTrayApp"/>
+                            ToolTipText="QuickBTTray"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
