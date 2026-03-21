@@ -6,7 +6,7 @@ namespace QuickBTTrayApp.Services
     public sealed class AppState
     {
         public List<string> SelectedDeviceAddresses { get; init; } = [];
-        public bool UseUiaConnect    { get; set; } = false;
+        public bool UseUiaConnect    { get; set; } = true;
         public bool UseUiaDisconnect { get; set; } = true;
         public static AppState CreateDefault() => new();
     }

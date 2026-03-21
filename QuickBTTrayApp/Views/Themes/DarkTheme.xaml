@@ -95,4 +95,48 @@
         </Setter>
     </Style>
 
+    <!-- Implicit RadioButton style: dark box, white dot, vertically centered -->
+    <Style TargetType="RadioButton">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Circle -->
+                            <Border x:Name="RadioBorder"
+                                    Width="14" Height="14"
+                                    Background="#3C3C3C"
+                                    BorderBrush="#999"
+                                    BorderThickness="1"
+                                    CornerRadius="7"
+                                    VerticalAlignment="Center">
+                                <Ellipse x:Name="RadioDot"
+                                         Width="6" Height="6"
+                                         Fill="#F0F0F0"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Visibility="Collapsed"/>
+                            </Border>
+                            <!-- Label -->
+                            <ContentPresenter Margin="5,0,0,0"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="RadioDot"    Property="Visibility"   Value="Visible"/>
+                            <Setter TargetName="RadioBorder" Property="BorderBrush"  Value="#AAAAAA"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RadioBorder" Property="BorderBrush"  Value="#CCCCCC"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
