@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using QuickBTTrayApp.Models;
@@ -20,6 +21,7 @@ namespace QuickBTTrayApp.ViewModels
         private readonly IBluetoothDisconnectPath  _uiaDisconnect;
         private readonly IBluetoothDisconnectPath  _hciDisconnect;
         private readonly AppStateStore             _stateStore;
+        private readonly SemaphoreSlim             _operationGate = new(1, 1);
         private AppState         _appState;
         private bool             _isBusy;
         private ConnectionMethod _connectBy;
@@ -148,14 +150,15 @@ namespace QuickBTTrayApp.ViewModels
         /// <summary>LMB single-click: batch connect/disconnect all selected devices.</summary>
         public async Task OnTrayLeftSingleClickAsync()
         {
-            if (_isBusy)
-            {
-                Notify("QuickBTTray", "A Bluetooth action is already running.");
-                return;
-            }
             if (_appState.SelectedDeviceAddresses.Count == 0)
             {
                 Notify("QuickBTTray", "Select one or more devices from the tray menu first.");
+                return;
+            }
+
+            if (!await _operationGate.WaitAsync(0))
+            {
+                Notify("QuickBTTray", "A Bluetooth action is already running.");
                 return;
             }
 
@@ -181,13 +184,22 @@ namespace QuickBTTrayApp.ViewModels
                 await RefreshDevicesAsync();
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
-            finally { SetBusy(false); }
+            finally
+            {
+                SetBusy(false);
+                _operationGate.Release();
+            }
         }
 
         // ── Internal ─────────────────────────────────────────────────────────
         private async Task ToggleDeviceAsync(BluetoothDeviceViewModel vm)
         {
-            if (_isBusy) { Notify("QuickBTTray", "A Bluetooth action is already running."); return; }
+            if (!await _operationGate.WaitAsync(0))
+            {
+                Notify("QuickBTTray", "A Bluetooth action is already running.");
+                return;
+            }
+
             SetBusy(true);
             try
             {
@@ -198,7 +210,11 @@ namespace QuickBTTrayApp.ViewModels
                 await RefreshDevicesAsync();
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
-            finally { SetBusy(false); }
+            finally
+            {
+                SetBusy(false);
+                _operationGate.Release();
+            }
         }
 
         private void SetBusy(bool isBusy)
