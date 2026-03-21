@@ -3,6 +3,7 @@ using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using QuickBTTrayApp.Services;
 using QuickBTTrayApp.Services.Api;
+using QuickBTTrayApp.Services.Api2;
 using QuickBTTrayApp.Services.Ui;
 using QuickBTTrayApp.ViewModels;
 using QuickBTTrayApp.Views;
@@ -31,6 +32,7 @@ namespace QuickBTTrayApp
             var startupService = new StartupService();
             var apiService     = new BluetoothApiService();
             var uiaService     = new BluetoothUiaService();
+            var hciService     = new BluetoothHciService();
 
             _viewModel = new TrayMenuViewModel(
                 discovery:     apiService,
@@ -38,6 +40,7 @@ namespace QuickBTTrayApp
                 uiaConnect:    uiaService,
                 apiDisconnect: apiService,
                 uiaDisconnect: uiaService,
+                hciDisconnect: hciService,
                    stateStore:    stateStore);
 
             var settingsViewModel = new SettingsViewModel(startupService, _viewModel);

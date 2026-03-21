@@ -60,7 +60,7 @@ namespace QuickBTTrayApp.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/QuickBTTray;component/views/traymenuwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/QuickBTTray;V1.0.0;component/views/traymenuwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\TrayMenuWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

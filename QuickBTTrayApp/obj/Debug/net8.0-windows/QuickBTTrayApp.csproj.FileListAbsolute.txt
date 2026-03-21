@@ -26,3 +26,5 @@ C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray.p
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\ref\QuickBTTray.dll
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\SettingsWindow.baml
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\SettingsWindow.g.cs
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray_MarkupCompile.lref

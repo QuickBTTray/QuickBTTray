@@ -26,61 +26,32 @@ namespace QuickBTTrayApp.ViewModels
         public ICommand ToggleRunOnStartupCommand { get; }
         public ICommand OpenBluetoothSettingsCommand => _trayMenuViewModel.OpenBluetoothSettingsCommand;
 
-        public bool ConnectByUI
+        public ConnectionMethod ConnectBy
         {
-            get => _trayMenuViewModel.ConnectByUI;
-            set
-            {
-                if (_trayMenuViewModel.ConnectByUI == value) return;
-                _trayMenuViewModel.ConnectByUI = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ConnectByAPI));
-            }
+            get => _trayMenuViewModel.ConnectBy;
+            set => _trayMenuViewModel.ConnectBy = value;
         }
 
-        public bool ConnectByAPI
+        public ConnectionMethod DisconnectBy
         {
-            get => _trayMenuViewModel.ConnectByAPI;
-            set
-            {
-                if (_trayMenuViewModel.ConnectByAPI == value) return;
-                _trayMenuViewModel.ConnectByAPI = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ConnectByUI));
-            }
-        }
-
-        public bool DisconnectByUI
-        {
-            get => _trayMenuViewModel.DisconnectByUI;
-            set
-            {
-                if (_trayMenuViewModel.DisconnectByUI == value) return;
-                _trayMenuViewModel.DisconnectByUI = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DisconnectByAPI));
-            }
-        }
-
-        public bool DisconnectByAPI
-        {
-            get => _trayMenuViewModel.DisconnectByAPI;
-            set
-            {
-                if (_trayMenuViewModel.DisconnectByAPI == value) return;
-                _trayMenuViewModel.DisconnectByAPI = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DisconnectByUI));
-            }
+            get => _trayMenuViewModel.DisconnectBy;
+            set => _trayMenuViewModel.DisconnectBy = value;
         }
 
         public SettingsViewModel(StartupService startupService, TrayMenuViewModel trayMenuViewModel)
         {
             _startupService = startupService;
             _trayMenuViewModel = trayMenuViewModel;
-            // Read live registry value — always reflects actual system state
             _runOnStartup = startupService.IsEnabled();
             ToggleRunOnStartupCommand = new RelayCommand(_ => RunOnStartup = !RunOnStartup);
+
+            _trayMenuViewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(TrayMenuViewModel.ConnectBy))
+                    OnPropertyChanged(nameof(ConnectBy));
+                else if (e.PropertyName == nameof(TrayMenuViewModel.DisconnectBy))
+                    OnPropertyChanged(nameof(DisconnectBy));
+            };
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

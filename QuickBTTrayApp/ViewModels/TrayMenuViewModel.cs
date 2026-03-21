@@ -9,7 +9,7 @@ using QuickBTTrayApp.Services.Contracts;
 
 namespace QuickBTTrayApp.ViewModels
 {
-    public enum ConnectionMethod { UI, API }
+    public enum ConnectionMethod { UI, API, HCI }
 
     public class TrayMenuViewModel : INotifyPropertyChanged
     {
@@ -18,6 +18,7 @@ namespace QuickBTTrayApp.ViewModels
         private readonly IBluetoothConnectPath     _uiaConnect;
         private readonly IBluetoothDisconnectPath  _apiDisconnect;
         private readonly IBluetoothDisconnectPath  _uiaDisconnect;
+        private readonly IBluetoothDisconnectPath  _hciDisconnect;
         private readonly AppStateStore             _stateStore;
         private AppState         _appState;
         private bool             _isBusy;
@@ -51,8 +52,9 @@ namespace QuickBTTrayApp.ViewModels
                 if (_disconnectBy == value) return;
                 _disconnectBy = value;
                 _appState.UseUiaDisconnect = value == ConnectionMethod.UI;
+                _appState.UseHciDisconnect = value == ConnectionMethod.HCI;
                 _stateStore.Save(_appState);
-                OnPropertyChanged(); OnPropertyChanged(nameof(DisconnectByUI)); OnPropertyChanged(nameof(DisconnectByAPI));
+                OnPropertyChanged(); OnPropertyChanged(nameof(DisconnectByUI)); OnPropertyChanged(nameof(DisconnectByAPI)); OnPropertyChanged(nameof(DisconnectByHCI));
             }
         }
 
@@ -60,6 +62,7 @@ namespace QuickBTTrayApp.ViewModels
         public bool ConnectByAPI    { get => ConnectBy    == ConnectionMethod.API; set { if (value) ConnectBy    = ConnectionMethod.API; } }
         public bool DisconnectByUI  { get => DisconnectBy == ConnectionMethod.UI;  set { if (value) DisconnectBy = ConnectionMethod.UI;  } }
         public bool DisconnectByAPI { get => DisconnectBy == ConnectionMethod.API; set { if (value) DisconnectBy = ConnectionMethod.API; } }
+        public bool DisconnectByHCI { get => DisconnectBy == ConnectionMethod.HCI; set { if (value) DisconnectBy = ConnectionMethod.HCI; } }
 
         public ICommand ExitCommand                  { get; }
         public ICommand OpenBluetoothSettingsCommand { get; }
@@ -70,6 +73,7 @@ namespace QuickBTTrayApp.ViewModels
             IBluetoothConnectPath     uiaConnect,
             IBluetoothDisconnectPath  apiDisconnect,
             IBluetoothDisconnectPath  uiaDisconnect,
+            IBluetoothDisconnectPath  hciDisconnect,
                AppStateStore             stateStore)
         {
             _discovery     = discovery;
@@ -77,11 +81,14 @@ namespace QuickBTTrayApp.ViewModels
             _uiaConnect    = uiaConnect;
             _apiDisconnect = apiDisconnect;
             _uiaDisconnect = uiaDisconnect;
+            _hciDisconnect = hciDisconnect;
             _stateStore    = stateStore;
 
             _appState     = stateStore.Load();
-            _connectBy    = _appState.UseUiaConnect    ? ConnectionMethod.UI : ConnectionMethod.API;
-            _disconnectBy = _appState.UseUiaDisconnect ? ConnectionMethod.UI : ConnectionMethod.API;
+            _connectBy    = _appState.UseUiaConnect ? ConnectionMethod.UI : ConnectionMethod.API;
+            _disconnectBy = _appState.UseUiaDisconnect ? ConnectionMethod.UI
+                          : _appState.UseHciDisconnect  ? ConnectionMethod.HCI
+                          : ConnectionMethod.API;
 
             ExitCommand = new RelayCommand(_ => Application.Current.Shutdown());
             OpenBluetoothSettingsCommand = new RelayCommand(_ =>
@@ -212,9 +219,22 @@ namespace QuickBTTrayApp.ViewModels
                 : _apiConnect.ConnectAsync(name, addr);
 
         private Task<DeviceToggleResult> DispatchDisconnectAsync(string name, string addr)
-            => DisconnectBy == ConnectionMethod.UI
-                ? _uiaDisconnect.DisconnectAsync(name, addr)
-                : _apiDisconnect.DisconnectAsync(name, addr);
+        {
+            var pathLabel = DisconnectBy switch
+            {
+                ConnectionMethod.UI  => "UI (Settings automation)",
+                ConnectionMethod.HCI => "HCI (IOCTL_BTH_DISCONNECT_DEVICE)",
+                _                    => "API (BluetoothSetServiceState)",
+            };
+            NotifyRequested?.Invoke("[DEBUG] Disconnect path", $"{name}\n{pathLabel}");
+
+            return DisconnectBy switch
+            {
+                ConnectionMethod.UI  => _uiaDisconnect.DisconnectAsync(name, addr),
+                ConnectionMethod.HCI => _hciDisconnect.DisconnectAsync(name, addr),
+                _                    => _apiDisconnect.DisconnectAsync(name, addr),
+            };
+        }
 
         private void HandleResults(IReadOnlyList<DeviceToggleResult> results)
         {

@@ -1,5 +1,5 @@
 ﻿QuickBTTray
-
+1.0.0
 
 winexe
 C#
@@ -12,7 +12,7 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\App.xaml
 4-475978153
 
-18484866552
+20-2117084883
 2081100769389
 Views\SettingsWindow.xaml;Views\Themes\DarkTheme.xaml;Views\Themes\LightTheme.xaml;Views\TrayMenuWindow.xaml;
 
