@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuickBTTrayApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1bea9138b308310607e21c7e72da179089d9aa5f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da345886598a2eb39d569102189c359560a403df")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuickBTTrayApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuickBTTrayApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <Resource Include="Views\Assets\icon.ico" />
+    <Resource Include="Views\Assets\device-connected.png" />
+    <Resource Include="Views\Assets\device-disconnected.png" />
   </ItemGroup>
 
 </Project>

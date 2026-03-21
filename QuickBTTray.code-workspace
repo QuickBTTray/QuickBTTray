@@ -7,5 +7,9 @@
 			"path": "../BT-cpl_shortcut"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"chat.tools.terminal.autoApprove": {
+			"Start-Process": true
+		}
+	}
 }

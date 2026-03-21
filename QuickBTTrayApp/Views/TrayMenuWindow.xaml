@@ -1,0 +1,270 @@
+<Window x:Class="QuickBTTrayApp.Views.TrayMenuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        Background="Transparent"
+        Topmost="True">
+
+    <Border CornerRadius="8"
+            Padding="0,6"
+            Background="{DynamicResource MenuBackground}">
+        <Border.Resources>
+            <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="{DynamicResource MenuBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource MenuForeground}"/>
+                <Setter Property="BorderBrush" Value="#888"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontFamily" Value="Segoe UI"/>
+                <Setter Property="Placement" Value="Right"/>
+                <Setter Property="HasDropShadow" Value="True"/>
+            </Style>
+        </Border.Resources>
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="16" ShadowDepth="3" Opacity="0.4"/>
+        </Border.Effect>
+
+        <StackPanel>
+
+            <!-- ── Header: section title + Exit button ── -->
+            <Grid Margin="8,4,8,4">
+                <TextBlock Text="BT Audio Devices"
+                           Foreground="{DynamicResource MenuForeground}"
+                           FontWeight="SemiBold"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"/>
+                <Button Content="Exit"
+                        Command="{Binding ExitCommand}"
+                        HorizontalAlignment="Right"
+                        Cursor="Hand"
+                        Padding="10,4"
+                        Style="{DynamicResource MenuButtonStyle}"/>
+            </Grid>
+
+            <!-- ── Divider below header ── -->
+            <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,2,10,4"/>
+            <ItemsControl ItemsSource="{Binding Devices}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Outer border: plain transparent container, no hover here -->
+                        <Border Margin="4,1" CornerRadius="4" Background="Transparent" Padding="0,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>     <!-- [1] checkbox + name, fills remaining space -->
+                                    <ColumnDefinition Width="26"/>    <!-- [2] Status icon, extra room to avoid clipping -->
+                                    <ColumnDefinition Width="90"/>    <!-- [3] Toggle button -->
+                                </Grid.ColumnDefinitions>
+
+                                <!-- [1] Clickable: checkbox + name — hover highlight scoped to this button only -->
+                                <Button Grid.Column="0"
+                                        Command="{Binding ToggleSelectedCommand}"
+                                        Cursor="Hand"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="4,3">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsSelected}"
+                                                  IsHitTestVisible="False"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="{DynamicResource MenuForeground}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- [2] Connection status icon -->
+                                <Image Grid.Column="1"
+                                       Source="{Binding StatusIcon}"
+                                       Width="16" Height="16"
+                                       VerticalAlignment="Center"
+                                       Margin="4,0"/>
+
+                                <!-- [3] Single toggle Connect/Disconnect button, fixed width -->
+                                <Button Grid.Column="2"
+                                        Content="{Binding ConnectionButtonLabel}"
+                                        Command="{Binding ToggleConnectionCommand}"
+                                        Style="{DynamicResource MenuButtonStyle}"
+                                        Padding="6,3"
+                                        Margin="4,2"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- ── Empty state: shown when no devices are found ── -->
+            <TextBlock Margin="12,6"
+                       Foreground="{DynamicResource MenuForeground}"
+                       FontStyle="Italic"
+                       Opacity="0.7">
+                <TextBlock.Text>No Bluetooth Audio Devices found!</TextBlock.Text>
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Devices.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- ── Divider ── -->
+            <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,6"/>
+
+            <!-- ── Connect by ── -->
+            <StackPanel Orientation="Horizontal" Margin="12,3,8,3">
+                <TextBlock Text="Connect by:"
+                           Foreground="{DynamicResource MenuForeground}"
+                           VerticalAlignment="Center"
+                           Width="100"/>
+                <Border Margin="0,1,6,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="API"
+                                 IsChecked="{Binding ConnectByAPI, Mode=TwoWay}"
+                                 GroupName="ConnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="6,3"/>
+                </Border>
+                <Border Margin="0,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="UI"
+                                 IsChecked="{Binding ConnectByUI, Mode=TwoWay}"
+                                 GroupName="ConnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="6,3"/>
+                </Border>
+            </StackPanel>
+
+            <!-- ── Disconnect by ── -->
+            <StackPanel Orientation="Horizontal" Margin="12,3,8,3">
+                <TextBlock Text="Disconnect by:"
+                           Foreground="{DynamicResource MenuForeground}"
+                           VerticalAlignment="Center"
+                           Width="100"/>
+                <Border Margin="0,1,6,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="API"
+                                 IsChecked="{Binding DisconnectByAPI, Mode=TwoWay}"
+                                 GroupName="DisconnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="6,3"/>
+                </Border>
+                <Border Margin="0,1" CornerRadius="4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <RadioButton Content="UI (Rec.)"
+                                 IsChecked="{Binding DisconnectByUI, Mode=TwoWay}"
+                                 GroupName="DisconnectBy"
+                                 Foreground="{DynamicResource MenuForeground}"
+                                 VerticalAlignment="Center"
+                                 Padding="6,3">
+                        <RadioButton.ToolTip>
+                            <ToolTip>
+                                <TextBlock>UI option recommended as Windows API doesn&apos;t<LineBreak/>allow complete device disconnect</TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                </Border>
+            </StackPanel>
+
+            <!-- ── Divider ── -->
+            <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,6"/>
+
+            <!-- ── Open Bluetooth & Devices Settings ── -->
+            <Button Content="Open Bluetooth &amp; Devices Settings"
+                    Command="{Binding OpenBluetoothSettingsCommand}"
+                    Foreground="{DynamicResource MenuForeground}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand"
+                    Padding="12,5"
+                    Margin="4,1,4,1">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+        </StackPanel>
+    </Border>
+</Window>

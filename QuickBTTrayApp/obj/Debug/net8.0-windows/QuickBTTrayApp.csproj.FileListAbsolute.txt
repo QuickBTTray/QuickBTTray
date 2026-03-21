@@ -22,3 +22,7 @@ C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\refint\QuickB
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTrayApp.pdb
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTrayApp.genruntimeconfig.cache
 C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\ref\QuickBTTrayApp.dll
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\Themes\DarkTheme.baml
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\Themes\LightTheme.baml
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\TrayMenuWindow.baml
+C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\TrayMenuWindow.g.cs
