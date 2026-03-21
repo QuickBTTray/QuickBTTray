@@ -1,6 +1,7 @@
 
 
 <img src="sources/icon-app/icon.png" alt="QuickBTTray Icon" width="80"/>
+<img src="sources/app-screenshot/app-screenshot.png" alt="QuickBTTray Icon" width="80"/>
 
 # QuickBTTray
 
