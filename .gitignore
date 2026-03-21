@@ -1,0 +1,9 @@
+# Ignore build and publish outputs
+publish/
+publish-trimmed/
+bin/
+obj/
+*.pdb
+*.user
+*.suo
+*.vs/
