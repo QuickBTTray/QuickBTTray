@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "t5osXCoFEJ8=",
+  "success": true,
+  "projectFilePath": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\joel\\.nuget\\packages\\hardcodet.notifyicon.wpf\\2.0.1\\hardcodet.notifyicon.wpf.2.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
