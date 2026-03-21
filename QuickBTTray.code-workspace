@@ -9,7 +9,8 @@
 	],
 	"settings": {
 		"chat.tools.terminal.autoApprove": {
-			"Start-Process": true
+			"Start-Process": true,
+			"dotnet run": true
 		}
 	}
 }

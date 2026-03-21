@@ -6,7 +6,9 @@ namespace QuickBTTrayApp.Services
     public sealed class AppState
     {
         public List<string> SelectedDeviceAddresses { get; init; } = [];
+        public bool EnableNotifications { get; set; } = true;
         public bool UseUiaConnect     { get; set; } = true;
+        /// <summary>When true, connect uses the HCI service path (experimental 3rd path).</summary>
         public bool UseUiaDisconnect  { get; set; } = true;
         /// <summary>When true, disconnect uses the HCI IOCTL path (experimental 3rd path).</summary>
         public bool UseHciDisconnect  { get; set; } = false;

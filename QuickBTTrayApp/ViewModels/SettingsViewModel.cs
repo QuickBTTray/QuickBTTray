@@ -23,7 +23,19 @@ namespace QuickBTTrayApp.ViewModels
             }
         }
 
+        public bool NotificationsEnabled
+        {
+            get => _trayMenuViewModel.NotificationsEnabled;
+            set
+            {
+                if (_trayMenuViewModel.NotificationsEnabled == value) return;
+                _trayMenuViewModel.NotificationsEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand ToggleRunOnStartupCommand { get; }
+        public ICommand ToggleNotificationsCommand { get; }
         public ICommand OpenBluetoothSettingsCommand => _trayMenuViewModel.OpenBluetoothSettingsCommand;
 
         public ConnectionMethod ConnectBy
@@ -44,6 +56,7 @@ namespace QuickBTTrayApp.ViewModels
             _trayMenuViewModel = trayMenuViewModel;
             _runOnStartup = startupService.IsEnabled();
             ToggleRunOnStartupCommand = new RelayCommand(_ => RunOnStartup = !RunOnStartup);
+            ToggleNotificationsCommand = new RelayCommand(_ => NotificationsEnabled = !NotificationsEnabled);
 
             _trayMenuViewModel.PropertyChanged += (s, e) =>
             {
@@ -51,6 +64,8 @@ namespace QuickBTTrayApp.ViewModels
                     OnPropertyChanged(nameof(ConnectBy));
                 else if (e.PropertyName == nameof(TrayMenuViewModel.DisconnectBy))
                     OnPropertyChanged(nameof(DisconnectBy));
+                else if (e.PropertyName == nameof(TrayMenuViewModel.NotificationsEnabled))
+                    OnPropertyChanged(nameof(NotificationsEnabled));
             };
         }
 

@@ -31,6 +31,18 @@ namespace QuickBTTrayApp.ViewModels
         public event Action<string, string>? NotifyRequested;
         public event Action<bool>? BusyStateChanged;
 
+        public bool NotificationsEnabled
+        {
+            get => _appState.EnableNotifications;
+            set
+            {
+                if (_appState.EnableNotifications == value) return;
+                _appState.EnableNotifications = value;
+                _stateStore.Save(_appState);
+                OnPropertyChanged();
+            }
+        }
+
         public ConnectionMethod ConnectBy
         {
             get => _connectBy;
@@ -40,7 +52,7 @@ namespace QuickBTTrayApp.ViewModels
                 _connectBy = value;
                 _appState.UseUiaConnect = value == ConnectionMethod.UI;
                 _stateStore.Save(_appState);
-                OnPropertyChanged(); OnPropertyChanged(nameof(ConnectByUI)); OnPropertyChanged(nameof(ConnectByAPI));
+                   OnPropertyChanged(); OnPropertyChanged(nameof(ConnectByUI)); OnPropertyChanged(nameof(ConnectByAPI));
             }
         }
 
@@ -85,7 +97,8 @@ namespace QuickBTTrayApp.ViewModels
             _stateStore    = stateStore;
 
             _appState     = stateStore.Load();
-            _connectBy    = _appState.UseUiaConnect ? ConnectionMethod.UI : ConnectionMethod.API;
+            _connectBy    = _appState.UseUiaConnect ? ConnectionMethod.UI
+                         : ConnectionMethod.API;
             _disconnectBy = _appState.UseUiaDisconnect ? ConnectionMethod.UI
                           : _appState.UseHciDisconnect  ? ConnectionMethod.HCI
                           : ConnectionMethod.API;
@@ -137,12 +150,12 @@ namespace QuickBTTrayApp.ViewModels
         {
             if (_isBusy)
             {
-                NotifyRequested?.Invoke("QuickBTTray", "A Bluetooth action is already running.");
+                Notify("QuickBTTray", "A Bluetooth action is already running.");
                 return;
             }
             if (_appState.SelectedDeviceAddresses.Count == 0)
             {
-                NotifyRequested?.Invoke("QuickBTTray", "Select one or more devices from the tray menu first.");
+                Notify("QuickBTTray", "Select one or more devices from the tray menu first.");
                 return;
             }
 
@@ -167,14 +180,14 @@ namespace QuickBTTrayApp.ViewModels
                 HandleResults(results);
                 await RefreshDevicesAsync();
             }
-               catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
+               catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally { SetBusy(false); }
         }
 
         // ── Internal ─────────────────────────────────────────────────────────
         private async Task ToggleDeviceAsync(BluetoothDeviceViewModel vm)
         {
-            if (_isBusy) { NotifyRequested?.Invoke("QuickBTTray", "A Bluetooth action is already running."); return; }
+            if (_isBusy) { Notify("QuickBTTray", "A Bluetooth action is already running."); return; }
             SetBusy(true);
             try
             {
@@ -184,7 +197,7 @@ namespace QuickBTTrayApp.ViewModels
                 HandleResults([result]);
                 await RefreshDevicesAsync();
             }
-               catch (Exception ex) { NotifyRequested?.Invoke("QuickBTTray", ex.Message); }
+               catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally { SetBusy(false); }
         }
 
@@ -213,37 +226,64 @@ namespace QuickBTTrayApp.ViewModels
             _stateStore.Save(_appState);
         }
 
-        private Task<DeviceToggleResult> DispatchConnectAsync(string name, string addr)
-            => ConnectBy == ConnectionMethod.UI
-                ? _uiaConnect.ConnectAsync(name, addr)
-                : _apiConnect.ConnectAsync(name, addr);
+        private async Task<DeviceToggleResult> DispatchConnectAsync(string name, string addr)
+        {
+            var pathLabel = ConnectBy switch
+            {
+                ConnectionMethod.UI  => "UI",
+                _                    => "API",
+            };
+            Notify($"Connecting ({pathLabel})", name);
 
-        private Task<DeviceToggleResult> DispatchDisconnectAsync(string name, string addr)
+            var result = await (ConnectBy switch
+            {
+                ConnectionMethod.UI  => _uiaConnect.ConnectAsync(name, addr),
+                _                    => _apiConnect.ConnectAsync(name, addr),
+            });
+
+            if (result.Outcome == ToggleOutcome.Failed)
+                Notify($"Connect failed ({pathLabel})", $"{name}\n{result.Message}");
+
+            return result;
+        }
+
+        private async Task<DeviceToggleResult> DispatchDisconnectAsync(string name, string addr)
         {
             var pathLabel = DisconnectBy switch
             {
-                ConnectionMethod.UI  => "UI (Settings automation)",
-                ConnectionMethod.HCI => "HCI (IOCTL_BTH_DISCONNECT_DEVICE)",
-                _                    => "API (BluetoothSetServiceState)",
+                ConnectionMethod.UI  => "UI",
+                ConnectionMethod.HCI => "HCI",
+                _                    => "API",
             };
-            NotifyRequested?.Invoke("[DEBUG] Disconnect path", $"{name}\n{pathLabel}");
+            Notify($"Disconnecting ({pathLabel})", name);
 
-            return DisconnectBy switch
+            var result = await (DisconnectBy switch
             {
                 ConnectionMethod.UI  => _uiaDisconnect.DisconnectAsync(name, addr),
                 ConnectionMethod.HCI => _hciDisconnect.DisconnectAsync(name, addr),
                 _                    => _apiDisconnect.DisconnectAsync(name, addr),
-            };
+            });
+
+            if (result.Outcome == ToggleOutcome.Failed)
+                Notify($"Disconnect failed ({pathLabel})", $"{name}\n{result.Message}");
+
+            return result;
         }
 
         private void HandleResults(IReadOnlyList<DeviceToggleResult> results)
         {
             var failed = results.Where(r => r.Outcome == ToggleOutcome.Failed).ToList();
-            if (failed.Count > 0)
+            if (failed.Count > 1)
             {
                 var msg = $"Failed: {string.Join(", ", failed.Select(r => r.DeviceName))}. {failed[0].Message}";
-                NotifyRequested?.Invoke("QuickBTTray", msg);
+                Notify("QuickBTTray", msg);
             }
+        }
+
+        private void Notify(string title, string msg)
+        {
+            if (!NotificationsEnabled) return;
+            NotifyRequested?.Invoke(title, msg);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

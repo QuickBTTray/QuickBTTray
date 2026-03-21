@@ -46,6 +46,43 @@
             <!-- ── Divider ── -->
             <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,2,10,4"/>
 
+            <!-- ── Notifications toggle ── -->
+            <Button Command="{Binding ToggleNotificationsCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand"
+                    Padding="10,5"
+                    Margin="4,1,4,1">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding NotificationsEnabled, Mode=TwoWay}"
+                              IsHitTestVisible="False"
+                              VerticalAlignment="Center"
+                              Margin="0,0,8,0"/>
+                    <TextBlock Text="Notifications"
+                               Foreground="{DynamicResource MenuForeground}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
             <!-- ── Start with Windows toggle ── -->
             <Button Command="{Binding ToggleRunOnStartupCommand}"
                     HorizontalAlignment="Stretch"
@@ -86,7 +123,7 @@
             <!-- ── Divider ── -->
             <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,4,10,4"/>
 
-            <!-- ── Connect by ── -->
+            <!-- ── Connect via ── -->
             <Grid Margin="10,2,4,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="78" SharedSizeGroup="SettingsLabel"/>
@@ -94,7 +131,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="SettingsSecondaryOption"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="Connect by:"
+                           Text="Connect via:"
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
                 <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
@@ -133,7 +170,7 @@
                 </Border>
             </Grid>
 
-            <!-- ── Disconnect by ── -->
+            <!-- ── Disconnect via ── -->
             <Grid Margin="10,2,4,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="78" SharedSizeGroup="SettingsLabel"/>
@@ -142,7 +179,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="Disconnect by:"
+                           Text="Disconnect via:"
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
                 <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
