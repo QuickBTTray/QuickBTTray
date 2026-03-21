@@ -11,6 +11,37 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "Publish QuickBTTray standalone (versioned folder)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/.vscode/scripts/publish-versioned.ps1"
+			],
+			"isBackground": false,
+			"problemMatcher": "$msCompile",
+			"group": "build"
+		},
+		{
+			"label": "Package QuickBTTray standalone zip",
+			"type": "shell",
+			"dependsOn": "Publish QuickBTTray standalone (versioned folder)",
+			"dependsOrder": "sequence",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/.vscode/scripts/package-versioned.ps1"
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }
