@@ -9,10 +9,29 @@
     <AssemblyName>QuickBTTray</AssemblyName>
     <RootNamespace>QuickBTTrayApp</RootNamespace>
     <ApplicationIcon>Views\Assets\icon.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <VersionBase>1.0</VersionBase>
+    <Version Condition="'$(Version)' == ''">$(VersionBase).0</Version>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(Version)</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">$(Version)</FileVersion>
   </PropertyGroup>
+
+    <Target Name="ComputeVersionFromGitHeight"
+      BeforeTargets="GetAssemblyVersion"
+      Condition="'$(Version)' == '$(VersionBase).0'">
+    <Exec Command="git rev-list --count HEAD"
+          ConsoleToMSBuild="true"
+          IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitHeightRaw" />
+      <Output TaskParameter="ExitCode" PropertyName="GitHeightExitCode" />
+    </Exec>
+
+    <PropertyGroup Condition="'$(GitHeightExitCode)' == '0' and '$(GitHeightRaw)' != ''">
+      <GitHeight>$([System.String]::Copy('$(GitHeightRaw)').Trim())</GitHeight>
+      <Version>$(VersionBase).$(GitHeight)</Version>
+      <AssemblyVersion>$(VersionBase).$(GitHeight)</AssemblyVersion>
+      <FileVersion>$(VersionBase).$(GitHeight)</FileVersion>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />

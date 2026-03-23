@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "QuickBTTray/1.0.0": {
+      "QuickBTTray/1.0.38": {
         "dependencies": {
           "Hardcodet.NotifyIcon.Wpf": "2.0.1"
         },
@@ -25,7 +25,7 @@
     }
   },
   "libraries": {
-    "QuickBTTray/1.0.0": {
+    "QuickBTTray/1.0.38": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
