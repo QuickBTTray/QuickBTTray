@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\_myProjects\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\
 QuickBTTrayApp
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\_myProjects\QuickBTTray\QuickBTTrayApp\App.xaml
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\App.xaml
 4-475978153
 
-20-2117084883
+22-1148605542
 2081100769389
 Views\SettingsWindow.xaml;Views\Themes\DarkTheme.xaml;Views\Themes\LightTheme.xaml;Views\TrayMenuWindow.xaml;
 
-False
+True
 

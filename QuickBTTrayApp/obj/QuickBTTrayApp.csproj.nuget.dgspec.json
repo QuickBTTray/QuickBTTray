@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {}
+    "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {}
   },
   "projects": {
-    "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {
-      "version": "1.0.32",
+    "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
+        "projectUniqueName": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
         "projectName": "QuickBTTray",
-        "projectPath": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
+        "projectPath": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
         "packagesPath": "C:\\Users\\joel\\.nuget\\packages\\",
-        "outputPath": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\obj\\",
+        "outputPath": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\joel\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -47,12 +47,6 @@
             "Hardcodet.NotifyIcon.Wpf": {
               "target": "Package",
               "version": "[2.0.1, )"
-            },
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.25, )",
-              "autoReferenced": true
             }
           },
           "imports": [
@@ -66,20 +60,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -89,11 +69,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     }
