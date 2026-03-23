@@ -32,9 +32,11 @@ namespace QuickBTTrayApp.Services.Ui
         {
             try
             {
-                bool openedByApp = FindSettingsWindow() == null;
-                if (openedByApp)
-                    Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
+                bool hadSettingsWindow = FindSettingsWindow() != null;
+
+                // Always invoke the Bluetooth settings URI so the Settings app navigates
+                // to the expected page, even if a Settings window already exists.
+                Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
 
                 var win = await WaitForSettingsWindowAsync(8000);
                    if (win == null) return false;
@@ -58,7 +60,7 @@ namespace QuickBTTrayApp.Services.Ui
 
                 TryInvokeElement(btn);
 
-                if (openedByApp)
+                if (!hadSettingsWindow)
                 {
                     try
                     {
@@ -87,9 +89,24 @@ namespace QuickBTTrayApp.Services.Ui
 
         private static AutomationElement? FindSettingsWindow()
         {
-            var cond = new PropertyCondition(AutomationElement.ClassNameProperty, "ApplicationFrameWindow");
-            foreach (AutomationElement w in AutomationElement.RootElement.FindAll(TreeScope.Children, cond))
-                if ((w.Current.Name ?? "").Contains("Settings", StringComparison.OrdinalIgnoreCase)) return w;
+            var topLevelWindows = AutomationElement.RootElement.FindAll(TreeScope.Children, Condition.TrueCondition);
+            foreach (AutomationElement w in topLevelWindows)
+            {
+                var name = w.Current.Name ?? string.Empty;
+                var className = w.Current.ClassName ?? string.Empty;
+                if (!name.Contains("Settings", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (className.Equals("ApplicationFrameWindow", StringComparison.OrdinalIgnoreCase)
+                    || className.Equals("WinUIDesktopWin32WindowClass", StringComparison.OrdinalIgnoreCase)
+                    || string.IsNullOrWhiteSpace(className))
+                {
+                    return w;
+                }
+            }
+
             return null;
         }
 

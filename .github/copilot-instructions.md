@@ -16,8 +16,8 @@
   - App lives in the system tray. Use the "BT-cpl_shortcut.ico" icon for the tray.
   - Right-clicking the tray icon opens a custom menu.
   - Single LMB clicking the tray icon should connect or diconnect the devices that are marked by check boxes in the custom menu.
-  - Double LMB clicking the tray icon should should open Window Bluteooth & Devices settings page.
-  - Because we can both single and double LMB click the tray icon, we should have a short delay (e.g. 300ms) after the first click to determine if it's a single or double click before executing the action.
+  - Left-clicking is immediate (no single/double-click discrimination delay).
+  - Open Bluetooth & Devices settings from the tray menu entry.
 - **Menu Layout:**
   - **The tray icon opens a custom context menu with this layout:**
   ```

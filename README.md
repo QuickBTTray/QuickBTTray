@@ -9,7 +9,6 @@ I created this app because AirPods don’t support automatic switching between a
 ## Features
 - Lives in the system tray with a modern, theme-aware menu
 - One-click on the tray icon to connect/disconnect for selected Bluetooth audio devices
-- Double click the tray icon to open Bluetooth settings.
 - Manual connect/disconnect buttons for each device
 - Visual status icons for device connection state
 - Tray icon animates during connect/disconnect
@@ -23,7 +22,6 @@ I created this app because AirPods don’t support automatic switching between a
 - The app scans for Bluetooth audio devices and lists them in the tray menu.
 - Select devices with checkboxes for batch connect/disconnect.
 - Single left-click the tray icon to connect/disconnect selected devices.
-- Double left-click opens Windows Bluetooth & Devices settings.
 - Right-click opens the full menu with device controls and settings.
 - The tray icon blinks when connecting/disconnecting.
 - "Start with Windows" stores the app's path in the registry at:

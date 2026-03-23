@@ -64,7 +64,6 @@ namespace QuickBTTrayApp.Services.Api
                 var results = SetServiceStates([deviceAddress], enable: true);
                 sw.Stop();
                 var outcome = results.Count > 0 ? results[0].Outcome.ToString() : "NoResult";
-                Debug.WriteLine($"[API-CONNECT] {deviceAddress} finished in {sw.ElapsedMilliseconds} ms, outcome={outcome}");
 
                 return results.Count > 0
                     ? results[0]
@@ -79,7 +78,6 @@ namespace QuickBTTrayApp.Services.Api
                 var results = SetServiceStates([deviceAddress], enable: false);
                 sw.Stop();
                 var outcome = results.Count > 0 ? results[0].Outcome.ToString() : "NoResult";
-                Debug.WriteLine($"[API-DISCONNECT] {deviceAddress} finished in {sw.ElapsedMilliseconds} ms, outcome={outcome}");
 
                 return results.Count > 0
                     ? results[0]
@@ -98,13 +96,11 @@ namespace QuickBTTrayApp.Services.Api
             var byAddr = BuildDeviceInfoMap(targetAddresses);
             var results = new List<DeviceToggleResult>();
 
-            Debug.WriteLine($"[API-STATE] enable={enable}, targets={targetAddresses.Count}, found={byAddr.Count}");
 
             foreach (var address in targetAddresses)
             {
                 if (!byAddr.TryGetValue(address, out var info))
                 {
-                    Debug.WriteLine($"[API-STATE] address-not-found: {address}");
                     results.Add(new(address, address, ToggleOutcome.Failed, "Device not found."));
                     continue;
                 }
@@ -113,7 +109,6 @@ namespace QuickBTTrayApp.Services.Api
                 var guids = GetServiceGuids(address, info);
                 var flag = enable ? 1u : 0u;
 
-                Debug.WriteLine($"[API-STATE] address={address}, servicesToToggle={guids.Count}, enable={enable}");
 
                 // Toggle all GUIDs in parallel — each task captures its own struct copy (value type).
                 var guidSw = Stopwatch.StartNew();
@@ -124,7 +119,6 @@ namespace QuickBTTrayApp.Services.Api
                     var r = BluetoothSetServiceState(IntPtr.Zero, ref localInfo, ref gc, flag);
                     if (r == 0) return true;
 
-                    Debug.WriteLine($"[API-STATE] first-call failed, address={address}, guid={g}, enable={enable}, win32={r}");
 
                     if (enable)
                     {
@@ -137,17 +131,14 @@ namespace QuickBTTrayApp.Services.Api
 
                         if (rr != 0)
                         {
-                            Debug.WriteLine($"[API-STATE] retry failed, address={address}, guid={g}, disableResult={dr}, reEnableResult={rr}, win32={rr}");
                             return false;
                         }
-                        Debug.WriteLine($"[API-STATE] retry succeeded, address={address}, guid={g}, disableResult={dr}");
                         return true;
                     }
 
                     // Disconnect should be idempotent: "not found" means the service is already disabled.
                     if (r == ErrorNotFound)
                     {
-                        Debug.WriteLine($"[API-STATE] already-disabled, address={address}, guid={g}, win32={r}");
                         return true;
                     }
 
@@ -155,7 +146,6 @@ namespace QuickBTTrayApp.Services.Api
                 })).ToList();
 
                 Task.WhenAll(guidTasks).GetAwaiter().GetResult();
-                Debug.WriteLine($"[API-STATE] parallel-guids finished in {guidSw.ElapsedMilliseconds} ms, address={address}");
 
                 var ok = guidTasks.All(t => t.Result);
 
@@ -178,7 +168,6 @@ namespace QuickBTTrayApp.Services.Api
                         ? "Audio services may be disabled, but device is still connected in Windows. Use UI or HCI disconnect for full link drop."
                         : "Service-state change failed.");
 
-                Debug.WriteLine($"[API-STATE] result address={address}, outcome={outcome}, msg={msg}");
 
                 results.Add(new(deviceName, address, outcome, msg));
             }

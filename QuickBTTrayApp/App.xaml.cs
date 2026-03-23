@@ -18,7 +18,6 @@ namespace QuickBTTrayApp
         private TrayMenuWindow    _trayMenu        = null!;
         private TrayMenuViewModel _viewModel       = null!;
         private SettingsWindow    _settingsWindow  = null!;
-        private DispatcherTimer   _singleClickTimer = null!;
         private DispatcherTimer   _busyBlinkTimer   = null!;
         private ImageSource       _defaultTrayIconSource = null!;
         private ImageSource       _connectingTrayIconSource = null!;
@@ -70,28 +69,10 @@ namespace QuickBTTrayApp
                 _trayMenu.ShowNearTaskbar();
             };
 
-            // LMB single/double click discrimination (300 ms timer)
-            _singleClickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
-            _singleClickTimer.Tick += async (s, args) =>
+            // LMB: trigger selected-device action immediately.
+            _trayIcon.TrayLeftMouseUp += async (s, args) =>
             {
-                _singleClickTimer.Stop();
                 await _viewModel.OnTrayLeftSingleClickAsync();
-            };
-
-            _trayIcon.TrayLeftMouseUp += (s, args) =>
-            {
-                _singleClickTimer.Stop();
-                _singleClickTimer.Start();
-            };
-
-            _trayIcon.TrayMouseDoubleClick += (s, args) =>
-            {
-                _singleClickTimer.Stop();
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "ms-settings:bluetooth",
-                    UseShellExecute = true
-                });
             };
 
         }
@@ -99,7 +80,6 @@ namespace QuickBTTrayApp
         protected override void OnExit(ExitEventArgs e)
         {
             _busyBlinkTimer?.Stop();
-            _singleClickTimer?.Stop();
             _trayIcon?.Dispose();
             _trayMenu?.Close();
             _settingsWindow?.Close();
