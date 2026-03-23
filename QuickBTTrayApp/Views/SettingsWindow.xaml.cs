@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using QuickBTTrayApp.Services;
 using QuickBTTrayApp.ViewModels;
@@ -76,6 +78,15 @@ namespace QuickBTTrayApp.Views
 
             Resources.MergedDictionaries.Clear();
             Resources.MergedDictionaries.Add(new ResourceDictionary { Source = themeUri });
+        }
+
+        private void RadioOptionBorder_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Child is RadioButton radio)
+            {
+                radio.IsChecked = true;
+                e.Handled = true;
+            }
         }
     }
 }

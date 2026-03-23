@@ -173,7 +173,7 @@
                            Text="Connect via:"
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
-                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
+                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -196,7 +196,7 @@
                         </RadioButton.ToolTip>
                     </RadioButton>
                 </Border>
-                <Border Grid.Column="2" Margin="0,1" CornerRadius="4">
+                <Border Grid.Column="2" Margin="0,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -232,7 +232,7 @@
                            Text="Disconnect via:"
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
-                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4">
+                <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -255,7 +255,7 @@
                         </RadioButton.ToolTip>
                     </RadioButton>
                 </Border>
-                <Border Grid.Column="2" Margin="0,1" CornerRadius="4">
+                <Border Grid.Column="2" Margin="0,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
