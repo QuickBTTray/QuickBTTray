@@ -10,7 +10,11 @@
       "args": [],
       "cwd": "${workspaceFolder}/QuickBTTrayApp",
       "stopAtEntry": false,
-      "console": "internalConsole"
+      "console": "internalConsole",
+      "justMyCode": true,
+      "logging": {
+        "moduleLoad": false
+      }
     }
   ]
 }

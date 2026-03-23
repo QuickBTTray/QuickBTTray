@@ -32,44 +32,58 @@ namespace QuickBTTrayApp.Services.Ui
         {
             try
             {
+                var timing = Stopwatch.StartNew();
                 bool hadSettingsWindow = FindSettingsWindow() != null;
+                Debug.WriteLine($"[UIA] hadSettingsWindow={hadSettingsWindow}  t={timing.ElapsedMilliseconds}ms");
 
                 // Always invoke the Bluetooth settings URI so the Settings app navigates
                 // to the expected page, even if a Settings window already exists.
                 Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
+                Debug.WriteLine($"[UIA] ms-settings:bluetooth launched  t={timing.ElapsedMilliseconds}ms");
 
                 var win = await WaitForSettingsWindowAsync(8000);
-                   if (win == null) return false;
+                Debug.WriteLine($"[UIA] settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
+                if (win == null) return false;
 
                 await Task.Delay(1500);
+                Debug.WriteLine($"[UIA] after page-settle delay (1500ms)  t={timing.ElapsedMilliseconds}ms");
 
                 var deviceEl = await FindElementByNameAsync(win, deviceName, 6000);
-                   if (deviceEl == null) return false;
+                Debug.WriteLine($"[UIA] device element found={deviceEl != null}  t={timing.ElapsedMilliseconds}ms");
+                if (deviceEl == null) return false;
 
                 var btn = SearchForButton(win, deviceEl, action);
+                Debug.WriteLine($"[UIA] button '{action}' first search found={btn != null}  t={timing.ElapsedMilliseconds}ms");
                 if (btn == null)
                 {
                     TryInvokeElement(deviceEl);
+                    Debug.WriteLine($"[UIA] expanded device row, waiting 700ms  t={timing.ElapsedMilliseconds}ms");
                     await Task.Delay(700);
                     btn = SearchForButton(win, deviceEl, action);
+                    Debug.WriteLine($"[UIA] button '{action}' retry search found={btn != null}  t={timing.ElapsedMilliseconds}ms");
                 }
                 if (btn == null)
                 {
+                    Debug.WriteLine($"[UIA] FAILED — button not found  t={timing.ElapsedMilliseconds}ms");
                     return false;
                 }
 
                 TryInvokeElement(btn);
+                Debug.WriteLine($"[UIA] button clicked  t={timing.ElapsedMilliseconds}ms");
 
                 if (!hadSettingsWindow)
                 {
                     try
                     {
                         await Task.Delay(500);
+                        Debug.WriteLine($"[UIA] closing Settings window  t={timing.ElapsedMilliseconds}ms");
                         win.SetFocus();
                         if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern cp) cp.Close();
                     }
                        catch { }
                 }
+
+                Debug.WriteLine($"[UIA] DONE  total={timing.ElapsedMilliseconds}ms");
                 return true;
             }
                catch { return false; }

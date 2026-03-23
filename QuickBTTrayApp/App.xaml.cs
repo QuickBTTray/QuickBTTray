@@ -27,6 +27,7 @@ namespace QuickBTTrayApp
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            ApplyInitialThemeResources();
 
             var stateStore     = new AppStateStore();
             var startupService = new StartupService();
@@ -79,6 +80,16 @@ namespace QuickBTTrayApp
                 await _viewModel.OnTrayLeftSingleClickAsync();
             };
 
+        }
+
+        private void ApplyInitialThemeResources()
+        {
+            var themeService = new ThemeService();
+            var themeUri = themeService.IsDarkMode()
+                ? new Uri("pack://application:,,,/Views/Themes/DarkTheme.xaml", UriKind.Absolute)
+                : new Uri("pack://application:,,,/Views/Themes/LightTheme.xaml", UriKind.Absolute);
+
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = themeUri });
         }
 
         protected override void OnExit(ExitEventArgs e)
