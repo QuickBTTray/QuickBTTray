@@ -250,7 +250,7 @@
                                  Padding="5,2">
                         <RadioButton.ToolTip>
                             <ToolTip>
-                                <TextBlock>Sends a low-level HCI disconnect command<LineBreak/>to fully drop Bluetooth link</TextBlock>
+                                <TextBlock>Sends a low-level HCI disconnect to fully drop the Bluetooth link</TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>

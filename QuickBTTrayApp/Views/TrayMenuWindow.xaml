@@ -109,6 +109,7 @@
                                 <!-- [1] Clickable: checkbox + name — hover highlight scoped to this button only -->
                                 <Button Grid.Column="0"
                                         Command="{Binding ToggleSelectedCommand}"
+                                    ToolTip="Tip: Single-click on tray icon to Connect/Disconnect ✅ devices in this menu"
                                         Cursor="Hand"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center">

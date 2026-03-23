@@ -121,6 +121,12 @@ namespace QuickBTTrayApp.ViewModels
             try   { raw = await Task.Run(() => _discovery.GetAudioDevices()); }
                catch { raw = []; }
 
+            ApplyDiscoveredDevices(raw);
+        }
+
+        private void ApplyDiscoveredDevices(IReadOnlyList<BluetoothAudioDevice> raw)
+        {
+
             // Prune selected addresses that no longer exist
             var active = raw.Select(d => d.Address).ToHashSet(StringComparer.OrdinalIgnoreCase);
             _appState.SelectedDeviceAddresses.RemoveAll(a => !active.Contains(a));
@@ -145,6 +151,68 @@ namespace QuickBTTrayApp.ViewModels
                 vm.PropertyChanged += OnDeviceSelectionChanged;
                 Devices.Add(vm);
             }
+        }
+
+        private void ApplyToggleResultsToDevices(IReadOnlyList<DeviceToggleResult> results)
+        {
+            foreach (var result in results)
+            {
+                var vm = Devices.FirstOrDefault(d => string.Equals(d.Address, result.DeviceAddress, StringComparison.OrdinalIgnoreCase));
+                if (vm == null) continue;
+
+                if (result.Outcome == ToggleOutcome.Connected)
+                {
+                    vm.IsConnected = true;
+                }
+                else if (result.Outcome == ToggleOutcome.Disconnected)
+                {
+                    vm.IsConnected = false;
+                }
+            }
+        }
+
+        private async Task RefreshDevicesAfterToggleAsync(IReadOnlyList<DeviceToggleResult> results)
+        {
+            var expectedStates = results
+                .Where(r => r.Outcome == ToggleOutcome.Connected || r.Outcome == ToggleOutcome.Disconnected)
+                .ToDictionary(
+                    r => r.DeviceAddress,
+                    r => r.Outcome == ToggleOutcome.Connected,
+                    StringComparer.OrdinalIgnoreCase);
+
+            if (expectedStates.Count == 0)
+            {
+                await RefreshDevicesAsync();
+                return;
+            }
+
+            IReadOnlyList<BluetoothAudioDevice> latest = [];
+
+            for (var attempt = 0; attempt < 8; attempt++)
+            {
+                try
+                {
+                    latest = await Task.Run(() => _discovery.GetAudioDevices());
+                }
+                catch
+                {
+                    latest = [];
+                }
+
+                var actualStates = latest.ToDictionary(d => d.Address, d => d.IsConnected, StringComparer.OrdinalIgnoreCase);
+                var settled = expectedStates.All(expected =>
+                    actualStates.TryGetValue(expected.Key, out var isConnected) && isConnected == expected.Value);
+
+                if (settled)
+                {
+                    ApplyDiscoveredDevices(latest);
+                    return;
+                }
+
+                await Task.Delay(350);
+            }
+
+            ApplyDiscoveredDevices(latest);
         }
 
         /// <summary>LMB single-click: batch connect/disconnect all selected devices.</summary>
@@ -181,7 +249,8 @@ namespace QuickBTTrayApp.ViewModels
                         : await DispatchConnectAsync(d.Name, d.Address));
 
                 HandleResults(results);
-                await RefreshDevicesAsync();
+                ApplyToggleResultsToDevices(results);
+                await RefreshDevicesAfterToggleAsync(results);
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally
@@ -207,7 +276,8 @@ namespace QuickBTTrayApp.ViewModels
                     ? await DispatchDisconnectAsync(vm.RawName, vm.Address)
                     : await DispatchConnectAsync(vm.RawName, vm.Address);
                 HandleResults([result]);
-                await RefreshDevicesAsync();
+                ApplyToggleResultsToDevices([result]);
+                await RefreshDevicesAfterToggleAsync([result]);
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally

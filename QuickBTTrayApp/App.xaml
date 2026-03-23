@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <tb:TaskbarIcon x:Key="TrayIcon"
                             IconSource="pack://application:,,,/Views/Assets/icon.ico"
-                            ToolTipText="QuickBTTray"/>
+                            ToolTipText="Single-click to Connect/Disconnect checked ✅ devices in the menu&#10;Double-click to open Bluetooth &amp; Devices Settings"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
