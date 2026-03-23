@@ -35,12 +35,51 @@
 
             <!-- ── Header ── -->
             <Grid Margin="8,4,8,4">
-                <TextBlock Text="Settings"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="Settings"
                            Foreground="{DynamicResource MenuForeground}"
                            FontWeight="SemiBold"
                            FontSize="12"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Left"/>
+                <Button Grid.Column="1"
+                        Command="{Binding OpenGitHubCommand}"
+                        Cursor="Hand"
+                        Padding="4,2">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <TextBlock Text="https://github.com/QuickBTTray/QuickBTTray"/>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <TextBlock Text="{Binding AppVersion}"
+                               Foreground="#0A66D8"
+                               FontSize="11"
+                               VerticalAlignment="Center"
+                               TextDecorations="Underline"/>
+                </Button>
             </Grid>
 
             <!-- ── Divider ── -->
@@ -149,7 +188,13 @@
                                  IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=API, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2"/>
+                                 Padding="5,2">
+                        <RadioButton.ToolTip>
+                            <ToolTip>
+                                <TextBlock>Uses the Win32 Bluetooth API for connection</TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
                 </Border>
                 <Border Grid.Column="2" Margin="0,1" CornerRadius="4">
                     <Border.Style>
@@ -166,7 +211,13 @@
                                  IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2"/>
+                                 Padding="5,2">
+                        <RadioButton.ToolTip>
+                            <ToolTip>
+                                <TextBlock>Uses UI Automation for native Windows Connect button behaviour</TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
                 </Border>
             </Grid>
 
@@ -199,7 +250,7 @@
                                  Padding="5,2">
                         <RadioButton.ToolTip>
                             <ToolTip>
-                                <TextBlock>Sends low-level HCI Disconnect command<LineBreak/>to fully drop Bluetooth link (default, most reliable).</TextBlock>
+                                <TextBlock>Sends a low-level HCI disconnect command<LineBreak/>to fully drop Bluetooth link</TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>
@@ -222,7 +273,7 @@
                                  Padding="5,2">
                         <RadioButton.ToolTip>
                             <ToolTip>
-                                <TextBlock>Uses Settings UI Automation for graceful disconnect</TextBlock>
+                                <TextBlock>Uses UI Automation for native Windows Disconnect button behaviour</TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>

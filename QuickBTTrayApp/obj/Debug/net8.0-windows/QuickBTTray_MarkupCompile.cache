@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\App.xaml
 4-475978153
 
-22-1148605542
+20-2117084883
 2081100769389
 Views\SettingsWindow.xaml;Views\Themes\DarkTheme.xaml;Views\Themes\LightTheme.xaml;Views\TrayMenuWindow.xaml;
 
-True
+False
 

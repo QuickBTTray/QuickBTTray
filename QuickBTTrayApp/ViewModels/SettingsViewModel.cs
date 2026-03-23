@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using QuickBTTrayApp.Services;
@@ -33,6 +35,12 @@ namespace QuickBTTrayApp.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public string AppVersion =>
+            "QuickBTTray-v" + (Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.0.0");
+
+        public ICommand OpenGitHubCommand { get; } = new RelayCommand(_ =>
+            Process.Start(new ProcessStartInfo("https://github.com/QuickBTTray/QuickBTTray") { UseShellExecute = true }));
 
         public ICommand ToggleRunOnStartupCommand { get; }
         public ICommand ToggleNotificationsCommand { get; }

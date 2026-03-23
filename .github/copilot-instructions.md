@@ -28,12 +28,22 @@
   | [1] BT Device 2   [2 status icon]   [3 Connect/Disconnect]  |
   | [1] BT Device 1   [2 status icon]   [3 Connect/Disconnect]  |
   |-------------------------------------------------------------|
-  | Connect by:    ( ) API   (•) UI                             |
-  | Disconnect by: ( ) API   (•) UI (Rec.)                      |
-  |-------------------------------------------------------------|
   | Open Bluetooth & Devices Settings                           |
   |-------------------------------------------------------------|
   ```
+  - **Settings menu**
+  ```
+  +---------------------------------------------------------------+
+  | Settings                                 [QuickBTTray-v1.2.3] |
+  |---------------------------------------------------------------|
+  | [ ] Notification                                              |
+  | [ ] Start with Windows                                        |
+  |---------------------------------------------------------------|
+  | Connect via:    (o) API   ( ) UI                              |
+  | Disconnect via: (o) API   ( ) UI                              |
+  +---------------------------------------------------------------+
+  ```
+
   - **Bluetooth Devices Section:**
     - Each row: [ ] Checkbox (select/enable for batch connect/disconnect), [status icon] (shows connected/disconnected), [Connect] and [Disconnect] buttons for manual control.
   - **Divider:**
