@@ -116,7 +116,7 @@
                               IsHitTestVisible="False"
                               VerticalAlignment="Center"
                               Margin="0,0,8,0"/>
-                    <TextBlock Text="Notifications"
+                    <TextBlock Text="Windows Notifications"
                                Foreground="{DynamicResource MenuForeground}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
@@ -174,6 +174,11 @@
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
                 <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
+                    <Border.ToolTip>
+                        <ToolTip>
+                            <TextBlock>Uses the Win32 Bluetooth API for connection</TextBlock>
+                        </ToolTip>
+                    </Border.ToolTip>
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -188,15 +193,14 @@
                                  IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=API, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2">
-                        <RadioButton.ToolTip>
-                            <ToolTip>
-                                <TextBlock>Uses the Win32 Bluetooth API for connection</TextBlock>
-                            </ToolTip>
-                        </RadioButton.ToolTip>
-                    </RadioButton>
+                                 Padding="5,2"/>
                 </Border>
                 <Border Grid.Column="2" Margin="0,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
+                    <Border.ToolTip>
+                        <ToolTip>
+                            <TextBlock>Uses UI Automation for native Windows Connect button behaviour</TextBlock>
+                        </ToolTip>
+                    </Border.ToolTip>
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -211,13 +215,7 @@
                                  IsChecked="{Binding ConnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2">
-                        <RadioButton.ToolTip>
-                            <ToolTip>
-                                <TextBlock>Uses UI Automation for native Windows Connect button behaviour</TextBlock>
-                            </ToolTip>
-                        </RadioButton.ToolTip>
-                    </RadioButton>
+                                 Padding="5,2"/>
                 </Border>
             </Grid>
 
@@ -233,6 +231,11 @@
                            Foreground="{DynamicResource MenuForeground}"
                            VerticalAlignment="Center"/>
                 <Border Grid.Column="1" Margin="0,1,2,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
+                    <Border.ToolTip>
+                        <ToolTip>
+                            <TextBlock>Sends a low-level HCI disconnect to fully drop the Bluetooth link</TextBlock>
+                        </ToolTip>
+                    </Border.ToolTip>
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -247,15 +250,14 @@
                                  IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=HCI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2">
-                        <RadioButton.ToolTip>
-                            <ToolTip>
-                                <TextBlock>Sends a low-level HCI disconnect to fully drop the Bluetooth link</TextBlock>
-                            </ToolTip>
-                        </RadioButton.ToolTip>
-                    </RadioButton>
+                                 Padding="5,2"/>
                 </Border>
                 <Border Grid.Column="2" Margin="0,1" CornerRadius="4" Cursor="Hand" PreviewMouseLeftButtonDown="RadioOptionBorder_PreviewMouseLeftButtonDown">
+                    <Border.ToolTip>
+                        <ToolTip>
+                            <TextBlock>Uses UI Automation for native Windows Disconnect button behaviour</TextBlock>
+                        </ToolTip>
+                    </Border.ToolTip>
                     <Border.Style>
                         <Style TargetType="Border">
                             <Setter Property="Background" Value="Transparent"/>
@@ -270,13 +272,7 @@
                                  IsChecked="{Binding DisconnectBy, Converter={StaticResource EnumToBool}, ConverterParameter=UI, Mode=TwoWay}"
                                  Foreground="{DynamicResource MenuForeground}"
                                  VerticalAlignment="Center"
-                                 Padding="5,2">
-                        <RadioButton.ToolTip>
-                            <ToolTip>
-                                <TextBlock>Uses UI Automation for native Windows Disconnect button behaviour</TextBlock>
-                            </ToolTip>
-                        </RadioButton.ToolTip>
-                    </RadioButton>
+                                 Padding="5,2"/>
                 </Border>
             </Grid>
 
