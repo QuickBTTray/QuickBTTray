@@ -4,7 +4,14 @@
 		{
 			"label": "Build QuickBTTrayApp",
 			"type": "shell",
-			"command": "dotnet build QuickBTTrayApp/QuickBTTrayApp.csproj",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"& '${workspaceFolder}/.vscode/scripts/stop-running-app.ps1'; dotnet build QuickBTTrayApp/QuickBTTrayApp.csproj"
+			],
 			"isBackground": false,
 			"problemMatcher": "$msCompile",
 			"group": {

@@ -1,0 +1,48 @@
+<Window x:Class="QuickBTTrayApp.Views.InlineMessageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        Background="Transparent"
+        Topmost="True"
+        ShowActivated="False"
+        Focusable="False"
+        IsHitTestVisible="False">
+
+    <Border Margin="8"
+            CornerRadius="8"
+            Padding="12,8"
+            Background="{DynamicResource MenuBackground}">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="16" ShadowDepth="3" Opacity="0.4"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="i"
+                       Width="16"
+                       Height="16"
+                       Margin="0,0,8,0"
+                       TextAlignment="Center"
+                       VerticalAlignment="Top"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource MenuForeground}"/>
+
+            <TextBlock Grid.Column="1"
+                       x:Name="MessageText"
+                       TextWrapping="Wrap"
+                       MaxWidth="400"
+                       Foreground="{DynamicResource MenuForeground}"
+                       FontSize="12"
+                       Text="Message"/>
+        </Grid>
+    </Border>
+</Window>

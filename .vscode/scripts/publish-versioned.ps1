@@ -4,6 +4,8 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Push-Location $repoRoot
 try {
 
+& (Join-Path $PSScriptRoot "stop-running-app.ps1")
+
 $base = "1.0"
 $height = (git rev-list --count HEAD)
 if (-not $height) {

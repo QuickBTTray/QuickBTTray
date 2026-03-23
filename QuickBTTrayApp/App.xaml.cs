@@ -18,6 +18,7 @@ namespace QuickBTTrayApp
         private TrayMenuWindow    _trayMenu        = null!;
         private TrayMenuViewModel _viewModel       = null!;
         private SettingsWindow    _settingsWindow  = null!;
+        private InlineMessageWindow _inlineMessageWindow = null!;
         private DispatcherTimer   _busyBlinkTimer   = null!;
         private ImageSource       _defaultTrayIconSource = null!;
         private ImageSource       _connectingTrayIconSource = null!;
@@ -44,6 +45,7 @@ namespace QuickBTTrayApp
 
             var settingsViewModel = new SettingsViewModel(startupService, _viewModel);
             _settingsWindow = new SettingsWindow(settingsViewModel);
+            _inlineMessageWindow = new InlineMessageWindow();
 
             _trayIcon = (TaskbarIcon)FindResource("TrayIcon");
             _trayMenu = new TrayMenuWindow(_viewModel, _settingsWindow);
@@ -56,6 +58,8 @@ namespace QuickBTTrayApp
             // Balloon notifications from ViewModel
             _viewModel.NotifyRequested += (title, msg) =>
                 _trayIcon.ShowBalloonTip(title, msg, BalloonIcon.Info);
+            _viewModel.InlinePopupRequested += msg =>
+                Dispatcher.Invoke(() => _inlineMessageWindow.ShowNearCursor(msg));
             _viewModel.BusyStateChanged += isBusy =>
             {
                 if (isBusy) StartBusyTrayAnimation();
@@ -83,6 +87,7 @@ namespace QuickBTTrayApp
             _trayIcon?.Dispose();
             _trayMenu?.Close();
             _settingsWindow?.Close();
+            _inlineMessageWindow?.Close();
             base.OnExit(e);
         }
 

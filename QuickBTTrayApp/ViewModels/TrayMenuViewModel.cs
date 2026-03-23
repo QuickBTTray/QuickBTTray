@@ -31,6 +31,7 @@ namespace QuickBTTrayApp.ViewModels
 
         /// <summary>Raised when a tray balloon notification should be shown.</summary>
         public event Action<string, string>? NotifyRequested;
+        public event Action<string>? InlinePopupRequested;
         public event Action<bool>? BusyStateChanged;
 
         public bool NotificationsEnabled
@@ -220,7 +221,7 @@ namespace QuickBTTrayApp.ViewModels
         {
             if (_appState.SelectedDeviceAddresses.Count == 0)
             {
-                Notify("QuickBTTray", "Select one or more devices from the tray menu first.");
+                InlinePopupRequested?.Invoke("No devices ✅ selectd to Connect/Disconnect in the right-click menu");
                 return;
             }
 

@@ -58,3 +58,5 @@ C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\refin
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray.pdb
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTrayApp.genruntimeconfig.cache
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\ref\QuickBTTray.dll
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\InlineMessageWindow.baml
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\Views\InlineMessageWindow.g.cs
