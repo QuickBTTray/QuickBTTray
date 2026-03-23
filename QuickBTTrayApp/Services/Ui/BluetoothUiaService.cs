@@ -16,7 +16,7 @@ namespace QuickBTTrayApp.Services.Ui
         {
             var ok = await InvokeDeviceActionAsync(deviceName, "Connect");
             return ok
-                ? new(deviceName, deviceAddress, ToggleOutcome.Connected,    "Connected via Settings UI.")
+                ? new(deviceName, deviceAddress, ToggleOutcome.Connected, "Connected via Settings UI.")
                 : new(deviceName, deviceAddress, ToggleOutcome.Failed, "Settings UI connect failed.");
         }
 
