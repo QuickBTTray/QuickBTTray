@@ -4,7 +4,7 @@ A lightweight Windows tray application for quick management of Bluetooth audio d
 
 <img src="sources/app-screenshot/app-screenshot.png?v=2" alt="QuickBTTray Icon"/>
 
-I created this app because AirPods don’t support automatic switching between an iPhone and a PC. While they stay paired to both, manually connecting through Windows 11 Bluetooth menus several times a day quickly becomes tedious. This app minimizes that friction: a simple left-click on the tray icon instantly toggles the connection of the devices you’ve selected in the apps menu.
+I created this app because AirPods don’t support automatic switching between an iPhone and a PC. While they stay paired to both, manually connecting through Windows 11 Bluetooth menus several times a day quickly becomes tedious (which I do at work). This app minimizes that friction: a simple left-click on the tray icon instantly toggles the connection of the devices you’ve selected in the app's menu. This app should hopefully work for anyone who has a Bluetooth headset without multipoint support.
 
 ## Features
 - Lives in the system tray with a modern, theme-aware menu
