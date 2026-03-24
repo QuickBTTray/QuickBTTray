@@ -44,4 +44,11 @@
     <Resource Include="Views\Assets\device-disconnected.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="QuickBTTray Help.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

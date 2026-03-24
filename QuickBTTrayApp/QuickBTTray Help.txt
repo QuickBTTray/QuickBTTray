@@ -1,0 +1,67 @@
+QuickBTTray Help
+================
+
+QuickBTTray is a portable Windows tray app for quickly connecting and disconnecting Bluetooth audio devices.
+
+Getting Started
+---------------
+1. Run QuickBTTray.exe.
+2. Find the Bluetooth tray icon in the Windows notification area.
+3. Right-click the tray icon to open the full device menu.
+4. Check the devices you want QuickBTTray to toggle when you left-click the tray icon.
+
+Tray Controls
+-------------
+- Left-click the tray icon: connect or disconnect the checked devices.
+- Right-click the tray icon: open the full menu.
+- Exit: closes the app.
+
+Device List
+-----------
+Each device row includes:
+- A checkbox to include the device in left-click batch toggle.
+- A status icon showing whether the device appears connected.
+- Connect and Disconnect buttons for manual control.
+
+Settings
+--------
+- Notification: enables or disables app notifications.
+- Start with Windows: adds or removes QuickBTTray from your Windows startup entry.
+- Connect via Win32 API or UI: chooses how the app attempts to connect devices.
+- Disconnect via HCI (lowe-level command) or UI: chooses how the app attempts to disconnect devices.
+
+Connection Methods
+------------------
+- API: faster when supported by the device and Windows state.
+- HCI: is the fastest diconnection method if it works.
+- UI: uses Windows UI automation and can help when API control does not work reliably.
+
+Connection Methods
+------------------
+- API: is nice because you don't see the Windows settings menu popping up but it's potentially slower than UI navigation.
+- HCI: is the fastest diconnection method if it works, UI is a fall back option.
+- UI: uses Windows UI automation for natively connecting or disconnecting and can help when API control does not work reliably.
+
+Tips
+----
+- If you move QuickBTTray.exe to a different folder, turn Start with Windows off and on again so Windows stores the new path.
+- If UI mode is selected, avoid clicking around while Windows is processing the Bluetooth action.
+- Some Bluetooth devices and drivers behave differently, so one method may work better than the other.
+
+Open Windows Bluetooth Settings
+-------------------------------
+Use the menu option Open Bluetooth & Devices Settings to jump directly to the Windows Bluetooth settings page.
+
+Requirements
+------------
+- Windows 10 or Windows 11
+- Bluetooth hardware and drivers supported by Windows
+
+Project Homepage
+----------------
+For updates, source code, and issue reporting:
+https://github.com/QuickBTTray/QuickBTTray
+
+Privacy
+-------
+QuickBTTray does not collect or transmit your personal data.
