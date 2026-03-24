@@ -36,9 +36,9 @@ namespace QuickBTTrayApp.Views
 
         private Action? _onHidden;
 
-        public void ShowNearCursor(Action? onHidden = null)
+        public bool ShowNearCursor(Action? onHidden = null)
         {
-            if ((DateTime.UtcNow - _lastDeactivated).TotalMilliseconds < 150) return;
+            if ((DateTime.UtcNow - _lastDeactivated).TotalMilliseconds < 150) return false;
             _onHidden = onHidden;
 
             ApplyTheme();
@@ -48,6 +48,7 @@ namespace QuickBTTrayApp.Views
             GetCursorPos(out POINT cursor);
             PositionNearPoint(cursor.X, cursor.Y);
             Activate();
+            return true;
         }
 
         private void PositionNearPoint(double anchorX, double anchorY)

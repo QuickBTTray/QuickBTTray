@@ -11,6 +11,7 @@ namespace QuickBTTrayApp.Views
     public partial class TrayMenuWindow : Window
     {
         private readonly ThemeService _themeService = new();
+        private readonly DispatcherTimer _suppressDeactivateTimeout;
         private DateTime _lastDeactivated;
         private SettingsWindow _settingsWindow = null!;
         private bool _suppressDeactivate;
@@ -26,6 +27,23 @@ namespace QuickBTTrayApp.Views
             InitializeComponent();
             DataContext = viewModel;
             _settingsWindow = settingsWindow;
+            _suppressDeactivateTimeout = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+            _suppressDeactivateTimeout.Tick += (s, e) =>
+            {
+                _suppressDeactivateTimeout.Stop();
+                _suppressDeactivate = false;
+
+                // If settings is still open, keep the main menu visible.
+                // If settings is already hidden and focus is elsewhere, close the main menu.
+                if (!_settingsWindow.IsVisible && !IsActive)
+                {
+                    _lastDeactivated = DateTime.UtcNow;
+                    Hide();
+                }
+            };
 
             Deactivated += (s, e) =>
             {
@@ -39,21 +57,36 @@ namespace QuickBTTrayApp.Views
         {
             // Suppress the Deactivated hide that fires when focus moves to the settings window
             _suppressDeactivate = true;
-            _settingsWindow.ShowNearCursor(onHidden: () =>
+            var shown = _settingsWindow.ShowNearCursor(onHidden: () =>
+            {
+                ReleaseSuppressAndHideIfInactive();
+            });
+
+            if (!shown)
             {
                 _suppressDeactivate = false;
-                // After WPF finishes processing focus/activation events, check whether
-                // the main menu got focus (user clicked inside it) or focus went elsewhere.
-                // If focus went elsewhere, close the main menu too.
-                Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                return;
+            }
+
+            _suppressDeactivateTimeout.Stop();
+            _suppressDeactivateTimeout.Start();
+        }
+
+        private void ReleaseSuppressAndHideIfInactive()
+        {
+            _suppressDeactivate = false;
+
+            // After WPF finishes processing focus/activation events, check whether
+            // the main menu got focus (user clicked inside it) or focus went elsewhere.
+            // If focus went elsewhere, close the main menu too.
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            {
+                if (!IsActive)
                 {
-                    if (!IsActive)
-                    {
-                        _lastDeactivated = DateTime.UtcNow;
-                        Hide();
-                    }
-                }));
-            });
+                    _lastDeactivated = DateTime.UtcNow;
+                    Hide();
+                }
+            }));
         }
 
         public void ShowNearTaskbar()

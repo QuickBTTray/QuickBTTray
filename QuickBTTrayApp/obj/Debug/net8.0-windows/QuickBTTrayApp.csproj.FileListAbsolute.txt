@@ -66,3 +66,5 @@ C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\bin\Debug\net8.0-windows-verif
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\bin\Debug\net8.0-windows-verify\QuickBTTray.dll
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\bin\Debug\net8.0-windows-verify\QuickBTTray.pdb
 C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\bin\Debug\net8.0-windows-verify\Hardcodet.NotifyIcon.Wpf.dll
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\bin\Debug\net8.0-windows\QuickBTTray Help.txt
+C:\_myProjects\JH-orgs\QuickBTTray\QuickBTTrayApp\obj\Debug\net8.0-windows\QuickBTTray_Content.g.cs
