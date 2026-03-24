@@ -10,6 +10,14 @@ namespace QuickBTTrayApp.Services.Ui
     /// </summary>
     public sealed class BluetoothUiaService : IBluetoothConnectPath, IBluetoothDisconnectPath
     {
+        private const int SettingsWindowTimeoutMs = 8000;
+        private const int ButtonReadyTimeoutMs = 6000;
+        private const int InitialSettleDelayMs = 200;
+        private const int ReadyPollIntervalMs = 200;
+        private const int PostClickConfirmTimeoutMs = 900;
+        private const int PostClickConfirmPollMs = 150;
+        private const int CloseFallbackDelayMs = 120;
+
            public BluetoothUiaService() { }
 
         public async Task<DeviceToggleResult> ConnectAsync(string deviceName, string deviceAddress)
@@ -41,41 +49,40 @@ namespace QuickBTTrayApp.Services.Ui
                 Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
                 Debug.WriteLine($"[UIA] ms-settings:bluetooth launched  t={timing.ElapsedMilliseconds}ms");
 
-                var win = await WaitForSettingsWindowAsync(8000);
+                var win = await WaitForSettingsWindowAsync(SettingsWindowTimeoutMs);
                 Debug.WriteLine($"[UIA] settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
                 if (win == null) return false;
 
-                await Task.Delay(1500);
-                Debug.WriteLine($"[UIA] after page-settle delay (1500ms)  t={timing.ElapsedMilliseconds}ms");
-
-                var deviceEl = await FindElementByNameAsync(win, deviceName, 6000);
-                Debug.WriteLine($"[UIA] device element found={deviceEl != null}  t={timing.ElapsedMilliseconds}ms");
-                if (deviceEl == null) return false;
-
-                var btn = SearchForButton(win, deviceEl, action);
-                Debug.WriteLine($"[UIA] button '{action}' first search found={btn != null}  t={timing.ElapsedMilliseconds}ms");
+                var btn = await WaitForClickableButtonAsync(win, deviceName, action, ButtonReadyTimeoutMs);
+                Debug.WriteLine($"[UIA] button '{action}' clickable={btn != null}  t={timing.ElapsedMilliseconds}ms");
                 if (btn == null)
                 {
-                    TryInvokeElement(deviceEl);
-                    Debug.WriteLine($"[UIA] expanded device row, waiting 700ms  t={timing.ElapsedMilliseconds}ms");
-                    await Task.Delay(700);
-                    btn = SearchForButton(win, deviceEl, action);
-                    Debug.WriteLine($"[UIA] button '{action}' retry search found={btn != null}  t={timing.ElapsedMilliseconds}ms");
-                }
-                if (btn == null)
-                {
-                    Debug.WriteLine($"[UIA] FAILED — button not found  t={timing.ElapsedMilliseconds}ms");
+                    Debug.WriteLine($"[UIA] FAILED — clickable button not found  t={timing.ElapsedMilliseconds}ms");
                     return false;
                 }
 
                 TryInvokeElement(btn);
                 Debug.WriteLine($"[UIA] button clicked  t={timing.ElapsedMilliseconds}ms");
 
+                var expectedNextAction = action.Equals("Connect", StringComparison.OrdinalIgnoreCase)
+                    ? "Disconnect"
+                    : "Connect";
+                var clickConfirmed = await WaitForStateTransitionAsync(
+                    win,
+                    deviceName,
+                    previousAction: action,
+                    expectedNextAction: expectedNextAction,
+                    timeoutMs: PostClickConfirmTimeoutMs);
+                Debug.WriteLine($"[UIA] post-click state confirmed={clickConfirmed}  t={timing.ElapsedMilliseconds}ms");
+
                 if (!hadSettingsWindow)
                 {
                     try
                     {
-                        await Task.Delay(500);
+                        if (!clickConfirmed)
+                        {
+                            await Task.Delay(CloseFallbackDelayMs);
+                        }
                         Debug.WriteLine($"[UIA] closing Settings window  t={timing.ElapsedMilliseconds}ms");
                         win.SetFocus();
                         if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern cp) cp.Close();
@@ -87,6 +94,84 @@ namespace QuickBTTrayApp.Services.Ui
                 return true;
             }
                catch { return false; }
+        }
+
+        private async Task<AutomationElement?> WaitForClickableButtonAsync(
+            AutomationElement win,
+            string deviceName,
+            string action,
+            int timeoutMs)
+        {
+            if (timeoutMs >= ButtonReadyTimeoutMs)
+            {
+                // Give Settings a brief chance to finish first render after navigation.
+                await Task.Delay(InitialSettleDelayMs);
+            }
+
+            var sw = Stopwatch.StartNew();
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                var deviceEl = FindElementByName(win, deviceName);
+                if (deviceEl != null)
+                {
+                    var btn = SearchForButton(win, deviceEl, action);
+                    if (IsElementClickable(btn))
+                    {
+                        return btn;
+                    }
+                }
+
+                await Task.Delay(timeoutMs >= ButtonReadyTimeoutMs ? ReadyPollIntervalMs : PostClickConfirmPollMs);
+            }
+
+            return null;
+        }
+
+        private static bool IsElementClickable(AutomationElement? el)
+        {
+            if (el == null) return false;
+            try
+            {
+                if (!el.Current.IsEnabled) return false;
+                if (el.Current.IsOffscreen) return false;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> WaitForStateTransitionAsync(
+            AutomationElement win,
+            string deviceName,
+            string previousAction,
+            string expectedNextAction,
+            int timeoutMs)
+        {
+            var sw = Stopwatch.StartNew();
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                var deviceEl = FindElementByName(win, deviceName);
+                if (deviceEl != null)
+                {
+                    var nextBtn = SearchForButton(win, deviceEl, expectedNextAction);
+                    if (nextBtn != null)
+                    {
+                        return true;
+                    }
+
+                    var prevBtn = SearchForButton(win, deviceEl, previousAction);
+                    if (prevBtn == null || !IsElementClickable(prevBtn))
+                    {
+                        return true;
+                    }
+                }
+
+                await Task.Delay(PostClickConfirmPollMs);
+            }
+
+            return false;
         }
 
         private async Task<AutomationElement?> WaitForSettingsWindowAsync(int timeoutMs)
