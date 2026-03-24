@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows.Automation;
 using QuickBTTrayApp.Services.Contracts;
 
@@ -16,7 +17,14 @@ namespace QuickBTTrayApp.Services.Ui
         private const int ReadyPollIntervalMs = 200;
         private const int PostClickConfirmTimeoutMs = 900;
         private const int PostClickConfirmPollMs = 150;
+        private const int CloseAfterConfirmDelayMs = 180;
         private const int CloseFallbackDelayMs = 120;
+
+        [DllImport("user32.dll")] private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")] private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+        private const int  SW_RESTORE        = 9;
+        private const byte VK_END            = 0x23;
+        private const uint KEYEVENTF_KEYUP   = 0x0002;
 
            public BluetoothUiaService() { }
 
@@ -53,11 +61,34 @@ namespace QuickBTTrayApp.Services.Ui
                 Debug.WriteLine($"[UIA] settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
                 if (win == null) return false;
 
+                await PrimeBluetoothPageAsync(win, timing);
+
                 var btn = await WaitForClickableButtonAsync(win, deviceName, action, ButtonReadyTimeoutMs);
                 Debug.WriteLine($"[UIA] button '{action}' clickable={btn != null}  t={timing.ElapsedMilliseconds}ms");
+                if (btn == null && hadSettingsWindow)
+                {
+                    Debug.WriteLine($"[UIA] first attempt failed on pre-opened window, retrying with fresh Settings instance  t={timing.ElapsedMilliseconds}ms");
+                    TryCloseSettingsWindow(win);
+                    await Task.Delay(250);
+
+                    Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
+                    win = await WaitForSettingsWindowAsync(SettingsWindowTimeoutMs);
+                    Debug.WriteLine($"[UIA] retry settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
+                    if (win != null)
+                    {
+                        await PrimeBluetoothPageAsync(win, timing);
+                        btn = await WaitForClickableButtonAsync(win, deviceName, action, ButtonReadyTimeoutMs);
+                        Debug.WriteLine($"[UIA] retry button '{action}' clickable={btn != null}  t={timing.ElapsedMilliseconds}ms");
+                    }
+                }
                 if (btn == null)
                 {
                     Debug.WriteLine($"[UIA] FAILED — clickable button not found  t={timing.ElapsedMilliseconds}ms");
+                    return false;
+                }
+                if (win == null)
+                {
+                    Debug.WriteLine($"[UIA] FAILED — settings window became unavailable  t={timing.ElapsedMilliseconds}ms");
                     return false;
                 }
 
@@ -68,7 +99,7 @@ namespace QuickBTTrayApp.Services.Ui
                     ? "Disconnect"
                     : "Connect";
                 var clickConfirmed = await WaitForStateTransitionAsync(
-                    win,
+                    win!,
                     deviceName,
                     previousAction: action,
                     expectedNextAction: expectedNextAction,
@@ -79,17 +110,18 @@ namespace QuickBTTrayApp.Services.Ui
                 {
                     try
                     {
-                        if (!clickConfirmed)
-                        {
-                            await Task.Delay(CloseFallbackDelayMs);
-                        }
+                        await Task.Delay(clickConfirmed ? CloseAfterConfirmDelayMs : CloseFallbackDelayMs);
                         Debug.WriteLine($"[UIA] closing Settings window  t={timing.ElapsedMilliseconds}ms");
-                        win.SetFocus();
+                        win!.SetFocus();
                         if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern cp) cp.Close();
                     }
                        catch { }
                 }
-
+                else
+                {
+                    TryMoveFocusOffActionButton(win);
+                    Debug.WriteLine($"[UIA] moved focus off action button  t={timing.ElapsedMilliseconds}ms");
+                }
                 Debug.WriteLine($"[UIA] DONE  total={timing.ElapsedMilliseconds}ms");
                 return true;
             }
@@ -108,16 +140,31 @@ namespace QuickBTTrayApp.Services.Ui
                 await Task.Delay(InitialSettleDelayMs);
             }
 
+            // Cache win reference for End-key nudges inside the loop.
             var sw = Stopwatch.StartNew();
             while (sw.ElapsedMilliseconds < timeoutMs)
             {
                 var deviceEl = FindElementByName(win, deviceName);
                 if (deviceEl != null)
                 {
+                    TryScrollIntoView(deviceEl);
                     var btn = SearchForButton(win, deviceEl, action);
                     if (IsElementClickable(btn))
                     {
                         return btn;
+                    }
+                }
+                else
+                {
+                    // Device not in UIA tree yet — try to pull Audio section into view first.
+                    if (!TryBringSectionIntoView(win, "Audio"))
+                    {
+                        // Fallback: nudge full content rehydration.
+                        var anchor = FindButtonNamed(win, "Add device") ?? FindButtonNamed(win, "Devices");
+                        if (!TryRehydrateDeviceSections(anchor, win))
+                        {
+                            TrySendEndKey(win);
+                        }
                     }
                 }
 
@@ -155,6 +202,7 @@ namespace QuickBTTrayApp.Services.Ui
                 var deviceEl = FindElementByName(win, deviceName);
                 if (deviceEl != null)
                 {
+                    TryScrollIntoView(deviceEl);
                     var nextBtn = SearchForButton(win, deviceEl, expectedNextAction);
                     if (nextBtn != null)
                     {
@@ -209,16 +257,44 @@ namespace QuickBTTrayApp.Services.Ui
             return null;
         }
 
-        private async Task<AutomationElement?> FindElementByNameAsync(AutomationElement root, string name, int timeoutMs)
+        private async Task PrimeBluetoothPageAsync(AutomationElement win, Stopwatch timing)
         {
-            var sw = Stopwatch.StartNew();
-            while (sw.ElapsedMilliseconds < timeoutMs)
+            var hwnd = new IntPtr(win.Current.NativeWindowHandle);
+            ShowWindow(hwnd, SW_RESTORE);
+
+            var pageAnchor = await WaitForPageLandmarkAsync(win, ButtonReadyTimeoutMs);
+            Debug.WriteLine($"[UIA] page landmark ready  t={timing.ElapsedMilliseconds}ms");
+
+            bool primedDevices = TryInvokeButtonByName(win, "Devices");
+            if (primedDevices)
             {
-                var el = FindElementByName(root, name);
-                if (el != null) return el;
-                await Task.Delay(400);
+                Debug.WriteLine($"[UIA] invoked Devices surface  t={timing.ElapsedMilliseconds}ms");
+                await Task.Delay(InitialSettleDelayMs);
             }
-            return null;
+
+            if (!TryRehydrateDeviceSections(pageAnchor, win))
+            {
+                TrySendEndKey(win);
+                Debug.WriteLine($"[UIA] sent End key to Settings window  t={timing.ElapsedMilliseconds}ms");
+            }
+            else
+            {
+                Debug.WriteLine($"[UIA] rehydrated device sections via content scroll  t={timing.ElapsedMilliseconds}ms");
+            }
+
+            await Task.Delay(InitialSettleDelayMs);
+        }
+
+        private static void TryCloseSettingsWindow(AutomationElement win)
+        {
+            try
+            {
+                if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern wp)
+                {
+                    wp.Close();
+                }
+            }
+            catch { }
         }
 
         private AutomationElement? FindElementByName(AutomationElement root, string name)
@@ -234,7 +310,7 @@ namespace QuickBTTrayApp.Services.Ui
         private AutomationElement? SearchForButton(AutomationElement win, AutomationElement deviceEl, string btnName)
         {
             var current = deviceEl;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 12; i++)
             {
                 var btn = FindButtonNamed(current, btnName);
                 if (btn != null) return btn;
@@ -246,7 +322,197 @@ namespace QuickBTTrayApp.Services.Ui
                 }
                 catch { break; }
             }
-            return FindButtonNamed(win, btnName);
+            return null;
+        }
+
+        private async Task<AutomationElement?> WaitForPageLandmarkAsync(AutomationElement win, int timeoutMs)
+        {
+            // "Add device" appears early in the Bluetooth page render, well before the
+            // device list sections load. Waiting for it ensures the page is live and will
+            // respond to keyboard input before we send the End key.
+            var sw = Stopwatch.StartNew();
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                var el = FindButtonNamed(win, "Add device");
+                if (el != null) return el;
+                await Task.Delay(ReadyPollIntervalMs);
+            }
+
+            return null;
+        }
+
+        private static bool TryRehydrateDeviceSections(AutomationElement? anchor, AutomationElement win)
+        {
+            try
+            {
+                var focusTarget = anchor ?? FindButtonNamed(win, "Devices") ?? win;
+                focusTarget.SetFocus();
+
+                var scroller = FindBestContentScroller(win) ?? FindScrollableAncestor(focusTarget);
+                if (scroller == null) return false;
+                if (!scroller.TryGetCurrentPattern(ScrollPattern.Pattern, out var patternObj)) return false;
+
+                var scroll = (ScrollPattern)patternObj;
+                if (!scroll.Current.VerticallyScrollable) return false;
+
+                // Top -> Bottom cycle nudges WinUI settings into materializing virtualized
+                // device rows that are sometimes missing when window is already open.
+                scroll.SetScrollPercent(ScrollPattern.NoScroll, 0.0);
+                scroll.SetScrollPercent(ScrollPattern.NoScroll, 100.0);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool TryBringSectionIntoView(AutomationElement win, string sectionName)
+        {
+            try
+            {
+                var section = FindElementByNameStatic(win, sectionName);
+                if (section == null) return false;
+                if (!section.TryGetCurrentPattern(ScrollItemPattern.Pattern, out var patternObj)) return false;
+                ((ScrollItemPattern)patternObj).ScrollIntoView();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static AutomationElement? FindBestContentScroller(AutomationElement win)
+        {
+            try
+            {
+                var all = win.FindAll(TreeScope.Descendants,
+                    new PropertyCondition(AutomationElement.IsScrollPatternAvailableProperty, true));
+
+                AutomationElement? best = null;
+                double bestArea = -1;
+                foreach (AutomationElement el in all)
+                {
+                    if (!el.TryGetCurrentPattern(ScrollPattern.Pattern, out var patternObj)) continue;
+                    var scroll = (ScrollPattern)patternObj;
+                    if (!scroll.Current.VerticallyScrollable) continue;
+
+                    var r = el.Current.BoundingRectangle;
+                    if (double.IsInfinity(r.Width) || double.IsInfinity(r.Height)) continue;
+                    if (r.Width <= 0 || r.Height <= 0) continue;
+
+                    double area = r.Width * r.Height;
+                    if (area > bestArea)
+                    {
+                        bestArea = area;
+                        best = el;
+                    }
+                }
+
+                return best;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static AutomationElement? FindScrollableAncestor(AutomationElement start)
+        {
+            var current = start;
+            for (int i = 0; i < 12; i++)
+            {
+                try
+                {
+                    if (current.TryGetCurrentPattern(ScrollPattern.Pattern, out var patternObj))
+                    {
+                        var scroll = (ScrollPattern)patternObj;
+                        if (scroll.Current.VerticallyScrollable)
+                        {
+                            return current;
+                        }
+                    }
+
+                    var parent = TreeWalker.RawViewWalker.GetParent(current);
+                    if (parent == null || parent == AutomationElement.RootElement)
+                    {
+                        break;
+                    }
+                    current = parent;
+                }
+                catch
+                {
+                    break;
+                }
+            }
+
+            return null;
+        }
+
+        private static void TrySendEndKey(AutomationElement win)
+        {
+            try
+            {
+                var focusTarget = FindButtonNamed(win, "Add device") ?? FindButtonNamed(win, "Devices") ?? win;
+                focusTarget.SetFocus();
+                keybd_event(VK_END, 0, 0,              UIntPtr.Zero); // key down
+                keybd_event(VK_END, 0, KEYEVENTF_KEYUP, UIntPtr.Zero); // key up
+            }
+            catch { }
+        }
+
+        private static void TryMoveFocusOffActionButton(AutomationElement win)
+        {
+            try
+            {
+                // Prefer a neutral control so the clicked device action button no longer
+                // looks focused when Settings remains open.
+                var focusTarget = FindElementByNameStatic(win, "Search box, Find a setting")
+                    ?? FindButtonNamed(win, "Expand search box")
+                    ?? FindButtonNamed(win, "Back")
+                    ?? win;
+                focusTarget.SetFocus();
+            }
+            catch { }
+        }
+
+        private static bool TryInvokeButtonByName(AutomationElement root, string name)
+        {
+            try
+            {
+                var btn = FindButtonNamed(root, name);
+                if (btn == null) return false;
+                TryInvokeElement(btn);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static AutomationElement? FindElementByNameStatic(AutomationElement root, string name)
+        {
+            try
+            {
+                return root.FindFirst(TreeScope.Descendants,
+                    new PropertyCondition(AutomationElement.NameProperty, name, PropertyConditionFlags.IgnoreCase));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void TryScrollIntoView(AutomationElement element)
+        {
+            try
+            {
+                if (element.TryGetCurrentPattern(ScrollItemPattern.Pattern, out var pattern))
+                    ((ScrollItemPattern)pattern).ScrollIntoView();
+            }
+            catch { }
         }
 
         private static AutomationElement? FindButtonNamed(AutomationElement root, string name)
