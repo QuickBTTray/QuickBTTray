@@ -29,10 +29,9 @@ I created this app because AirPods don’t support automatic switching between a
 
 ## Usage Instructions
 1. **Run QuickBTTray.exe** (standalone, no install required)
-2. **Select your Bluetooth audio devices** in the tray menu
+2. **Select your Bluetooth audio devices** in the right-click tray menu
 3. **Click the tray icon** to connect/disconnect selected devices
-4. **Use the gear/settings menu** to choose connection method or enable startup
-5. **Open Bluetooth settings** from the menu if needed
+4. **Use the gear/settings menu** for connection methods and notifaction settings
 
 ## Requirements
 - Windows 10/11
