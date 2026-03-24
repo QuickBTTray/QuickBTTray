@@ -48,52 +48,41 @@ namespace QuickBTTrayApp.Services.Ui
         {
             try
             {
-                var timing = Stopwatch.StartNew();
                 bool hadSettingsWindow = FindSettingsWindow() != null;
-                Debug.WriteLine($"[UIA] hadSettingsWindow={hadSettingsWindow}  t={timing.ElapsedMilliseconds}ms");
 
                 // Always invoke the Bluetooth settings URI so the Settings app navigates
                 // to the expected page, even if a Settings window already exists.
                 Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
-                Debug.WriteLine($"[UIA] ms-settings:bluetooth launched  t={timing.ElapsedMilliseconds}ms");
 
                 var win = await WaitForSettingsWindowAsync(SettingsWindowTimeoutMs);
-                Debug.WriteLine($"[UIA] settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
                 if (win == null) return false;
 
-                await PrimeBluetoothPageAsync(win, timing);
+                await PrimeBluetoothPageAsync(win);
 
                 var btn = await WaitForClickableButtonAsync(win, deviceName, action, ButtonReadyTimeoutMs);
-                Debug.WriteLine($"[UIA] button '{action}' clickable={btn != null}  t={timing.ElapsedMilliseconds}ms");
                 if (btn == null && hadSettingsWindow)
                 {
-                    Debug.WriteLine($"[UIA] first attempt failed on pre-opened window, retrying with fresh Settings instance  t={timing.ElapsedMilliseconds}ms");
                     TryCloseSettingsWindow(win);
                     await Task.Delay(250);
 
                     Process.Start(new ProcessStartInfo { FileName = "ms-settings:bluetooth", UseShellExecute = true });
                     win = await WaitForSettingsWindowAsync(SettingsWindowTimeoutMs);
-                    Debug.WriteLine($"[UIA] retry settings window found={win != null}  t={timing.ElapsedMilliseconds}ms");
                     if (win != null)
                     {
-                        await PrimeBluetoothPageAsync(win, timing);
+                        await PrimeBluetoothPageAsync(win);
                         btn = await WaitForClickableButtonAsync(win, deviceName, action, ButtonReadyTimeoutMs);
-                        Debug.WriteLine($"[UIA] retry button '{action}' clickable={btn != null}  t={timing.ElapsedMilliseconds}ms");
                     }
                 }
                 if (btn == null)
                 {
-                    Debug.WriteLine($"[UIA] FAILED — clickable button not found  t={timing.ElapsedMilliseconds}ms");
                     return false;
                 }
                 if (win == null)
                 {
-                    Debug.WriteLine($"[UIA] FAILED — settings window became unavailable  t={timing.ElapsedMilliseconds}ms");
                     return false;
                 }
 
                 TryInvokeElement(btn);
-                Debug.WriteLine($"[UIA] button clicked  t={timing.ElapsedMilliseconds}ms");
 
                 var expectedNextAction = action.Equals("Connect", StringComparison.OrdinalIgnoreCase)
                     ? "Disconnect"
@@ -104,14 +93,12 @@ namespace QuickBTTrayApp.Services.Ui
                     previousAction: action,
                     expectedNextAction: expectedNextAction,
                     timeoutMs: PostClickConfirmTimeoutMs);
-                Debug.WriteLine($"[UIA] post-click state confirmed={clickConfirmed}  t={timing.ElapsedMilliseconds}ms");
 
                 if (!hadSettingsWindow)
                 {
                     try
                     {
                         await Task.Delay(clickConfirmed ? CloseAfterConfirmDelayMs : CloseFallbackDelayMs);
-                        Debug.WriteLine($"[UIA] closing Settings window  t={timing.ElapsedMilliseconds}ms");
                         win!.SetFocus();
                         if (win.GetCurrentPattern(WindowPattern.Pattern) is WindowPattern cp) cp.Close();
                     }
@@ -120,9 +107,7 @@ namespace QuickBTTrayApp.Services.Ui
                 else
                 {
                     TryMoveFocusOffActionButton(win);
-                    Debug.WriteLine($"[UIA] moved focus off action button  t={timing.ElapsedMilliseconds}ms");
                 }
-                Debug.WriteLine($"[UIA] DONE  total={timing.ElapsedMilliseconds}ms");
                 return true;
             }
                catch { return false; }
@@ -257,29 +242,22 @@ namespace QuickBTTrayApp.Services.Ui
             return null;
         }
 
-        private async Task PrimeBluetoothPageAsync(AutomationElement win, Stopwatch timing)
+        private async Task PrimeBluetoothPageAsync(AutomationElement win)
         {
             var hwnd = new IntPtr(win.Current.NativeWindowHandle);
             ShowWindow(hwnd, SW_RESTORE);
 
             var pageAnchor = await WaitForPageLandmarkAsync(win, ButtonReadyTimeoutMs);
-            Debug.WriteLine($"[UIA] page landmark ready  t={timing.ElapsedMilliseconds}ms");
 
             bool primedDevices = TryInvokeButtonByName(win, "Devices");
             if (primedDevices)
             {
-                Debug.WriteLine($"[UIA] invoked Devices surface  t={timing.ElapsedMilliseconds}ms");
                 await Task.Delay(InitialSettleDelayMs);
             }
 
             if (!TryRehydrateDeviceSections(pageAnchor, win))
             {
                 TrySendEndKey(win);
-                Debug.WriteLine($"[UIA] sent End key to Settings window  t={timing.ElapsedMilliseconds}ms");
-            }
-            else
-            {
-                Debug.WriteLine($"[UIA] rehydrated device sections via content scroll  t={timing.ElapsedMilliseconds}ms");
             }
 
             await Task.Delay(InitialSettleDelayMs);
