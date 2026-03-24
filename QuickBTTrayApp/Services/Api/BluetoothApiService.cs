@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using QuickBTTrayApp.Models;
 using QuickBTTrayApp.Services.Contracts;
@@ -60,10 +59,7 @@ namespace QuickBTTrayApp.Services.Api
         public Task<DeviceToggleResult> ConnectAsync(string deviceName, string deviceAddress)
             => Task.Run(() =>
             {
-                var sw = Stopwatch.StartNew();
                 var results = SetServiceStates([deviceAddress], enable: true);
-                sw.Stop();
-                var outcome = results.Count > 0 ? results[0].Outcome.ToString() : "NoResult";
 
                 return results.Count > 0
                     ? results[0]
@@ -74,10 +70,7 @@ namespace QuickBTTrayApp.Services.Api
         public Task<DeviceToggleResult> DisconnectAsync(string deviceName, string deviceAddress)
             => Task.Run(() =>
             {
-                var sw = Stopwatch.StartNew();
                 var results = SetServiceStates([deviceAddress], enable: false);
-                sw.Stop();
-                var outcome = results.Count > 0 ? results[0].Outcome.ToString() : "NoResult";
 
                 return results.Count > 0
                     ? results[0]
@@ -111,7 +104,6 @@ namespace QuickBTTrayApp.Services.Api
 
 
                 // Toggle all GUIDs in parallel — each task captures its own struct copy (value type).
-                var guidSw = Stopwatch.StartNew();
                 var guidTasks = guids.Select(g => Task.Run(() =>
                 {
                     var localInfo = info; // struct copy — safe to use independently on another thread
