@@ -75,7 +75,7 @@ namespace QuickBTTrayApp
                 else StopBusyTrayAnimation();
             };
 
-            // RMB: refresh device list then show menu
+            // RMB: show menu immediately (if cached), refresh device list in background
             _trayIcon.TrayRightMouseUp += async (s, args) =>
             {
                 GetCursorPos(out POINT cursor);
@@ -83,8 +83,18 @@ namespace QuickBTTrayApp
                 var anchorY = cursor.Y;
                 DebugLogService.Log($"Tray RMB captured anchor: ({anchorX}, {anchorY})");
 
-                await _viewModel.RefreshDevicesAsync();
-                _trayMenu.ShowNearTaskbar(anchorX, anchorY);
+                if (_viewModel.Devices.Count > 0)
+                {
+                    // Show immediately with cached data, then refresh in the background
+                    _trayMenu.ShowNearTaskbar(anchorX, anchorY);
+                    await _viewModel.RefreshDevicesAsync();
+                }
+                else
+                {
+                    // First open: no cached data yet, must wait for scan
+                    await _viewModel.RefreshDevicesAsync();
+                    _trayMenu.ShowNearTaskbar(anchorX, anchorY);
+                }
             };
 
             // LMB: trigger selected-device action immediately.
