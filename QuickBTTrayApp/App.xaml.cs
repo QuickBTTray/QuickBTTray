@@ -81,7 +81,6 @@ namespace QuickBTTrayApp
                 GetCursorPos(out POINT cursor);
                 var anchorX = cursor.X;
                 var anchorY = cursor.Y;
-                DebugLogService.Log($"Tray RMB captured anchor: ({anchorX}, {anchorY})");
 
                 if (_viewModel.Devices.Count > 0)
                 {

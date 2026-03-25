@@ -133,20 +133,17 @@ namespace QuickBTTrayApp.Views
             {
                 resolvedAnchorX = anchorX.Value;
                 resolvedAnchorY = anchorY.Value;
-                DebugLogService.Log($"Tray menu anchor source: provided ({resolvedAnchorX:0.##}, {resolvedAnchorY:0.##})");
             }
             else if (TryGetTrayAnchor(out var trayAnchorX, out var trayAnchorY))
             {
                 resolvedAnchorX = trayAnchorX;
                 resolvedAnchorY = trayAnchorY;
-                DebugLogService.Log($"Tray menu anchor source: tray-rect ({resolvedAnchorX:0.##}, {resolvedAnchorY:0.##})");
             }
             else
             {
                 GetCursorPos(out POINT cursor);
                 resolvedAnchorX = cursor.X;
                 resolvedAnchorY = cursor.Y;
-                DebugLogService.Log($"Tray menu anchor source: cursor-fallback ({cursor.X}, {cursor.Y})");
             }
 
             // Use cached dimensions to position before Show, eliminating visible move on reopen.
@@ -175,7 +172,6 @@ namespace QuickBTTrayApp.Views
             _lastKnownWidth = ActualWidth;
             _lastKnownHeight = ActualHeight;
 
-            DebugLogService.Log($"Tray menu final position: Left={Left:0.##}, Top={Top:0.##}, Width={ActualWidth:0.##}, Height={ActualHeight:0.##}");
             Opacity = 1;
             Activate();
         }

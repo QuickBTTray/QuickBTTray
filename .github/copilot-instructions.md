@@ -75,6 +75,13 @@
 - **Bluetooth Device Logic:**
   - Scaffold as interfaces/services for easy testing and future extension.
 
+## Debug Logging
+- Use `DebugLogService.Log(...)` in `QuickBTTrayApp/Services/DebugLogService.cs` for all diagnostic output.
+- The method is decorated with `[Conditional("DEBUG")]` — every call site is **compiled out entirely in Release/publish builds**. No runtime flags, no overhead, no file I/O in production.
+- Call it freely anywhere without guards. It writes a timestamped line to both `Debug.WriteLine` and `%localappdata%\QuickBTTray\debug.log`.
+- **Never** use `Trace.WriteLine`, raw `Debug.WriteLine`, or ad-hoc balloon `Notify("Debug ...", ...)` calls for diagnostics — always route through `DebugLogService.Log`.
+- Remove (or leave — they're free in Release) debug log calls before shipping; they are already safe to leave in.
+
 ## Technical Notes
 - **.NET Version:** .NET 8 LTS preferred (WPF UI supports .NET 6+).
 - **WPF UI Library:** Use for modern theming and automatic dark/light mode support.

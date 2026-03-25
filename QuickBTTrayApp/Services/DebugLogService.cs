@@ -3,6 +3,10 @@ using System.IO;
 
 namespace QuickBTTrayApp.Services
 {
+    /// <summary>
+    /// Debug-only logging. All call sites are compiled out in Release builds via
+    /// <see cref="ConditionalAttribute"/>. Add calls freely — zero cost in production.
+    /// </summary>
     internal static class DebugLogService
     {
         private static readonly object SyncRoot = new();
@@ -13,6 +17,7 @@ namespace QuickBTTrayApp.Services
 
         public static string CurrentLogFilePath => LogFilePath;
 
+        [Conditional("DEBUG")]
         public static void Log(string message)
         {
             var line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}";

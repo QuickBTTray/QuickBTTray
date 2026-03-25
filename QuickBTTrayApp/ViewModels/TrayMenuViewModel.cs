@@ -394,21 +394,18 @@ namespace QuickBTTrayApp.ViewModels
             if (hasSuccessfulConnect && SendMediaPlayOnConnect)
             {
                 await Task.Delay(750);
-                var mediaResult = await GlobalMediaControlService.TrySendPlayAsync();
-                Notify("Media Debug", mediaResult.DiagnosticMessage);
+                await GlobalMediaControlService.TrySendPlayAsync();
             }
 
             var hasSuccessfulDisconnect = results.Any(r => r.Outcome == ToggleOutcome.Disconnected);
             if (hasSuccessfulDisconnect && SendMediaPauseOnDisconnect)
             {
-                var mediaResult = await GlobalMediaControlService.TrySendPauseAsync();
-                Notify("Media Debug", mediaResult.DiagnosticMessage);
+                await GlobalMediaControlService.TrySendPauseAsync();
             }
         }
 
         private void Notify(string title, string msg)
         {
-            DebugLogService.Log($"{title}: {msg}");
             if (!NotificationsEnabled) return;
             NotifyRequested?.Invoke(title, msg);
         }
