@@ -190,7 +190,7 @@
                               IsHitTestVisible="False"
                               VerticalAlignment="Center"
                               Margin="0,0,8,0"/>
-                    <TextBlock Text="On Connect send Media Play"
+                    <TextBlock Text="Play media on Connect"
                                Foreground="{DynamicResource MenuForeground}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
@@ -227,7 +227,7 @@
                               IsHitTestVisible="False"
                               VerticalAlignment="Center"
                               Margin="0,0,8,0"/>
-                    <TextBlock Text="On Disconnect send Media Pause"
+                    <TextBlock Text="Pause media on Disconnect"
                                Foreground="{DynamicResource MenuForeground}"
                                VerticalAlignment="Center"/>
                 </StackPanel>
