@@ -12,11 +12,11 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuickBTTray")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.56")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.56+8d47d129cb6022547d1f58173dabc55762415dc8")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.59")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.59+64e4f00034047fe52e2e375d50f5361a8369c9c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuickBTTray")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuickBTTray")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.56")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.59")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 

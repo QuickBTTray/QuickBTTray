@@ -28,6 +28,7 @@ namespace QuickBTTrayApp
         {
             base.OnStartup(e);
             ApplyInitialThemeResources();
+            DebugLogService.Log($"App starting. Log file: {DebugLogService.CurrentLogFilePath}");
 
             var stateStore     = new AppStateStore();
             var startupService = new StartupService();

@@ -38,6 +38,8 @@
   |---------------------------------------------------------------|
   | [ ] Notification                                              |
   | [ ] Start with Windows                                        |
+  | [ ] On Connect send Media Play                                |
+  | [ ] On Disconnect send Media Pause                            |
   |---------------------------------------------------------------|
   | Connect via:    (o) API   ( ) UI                              |
   | Disconnect via: (o) API   ( ) UI                              |

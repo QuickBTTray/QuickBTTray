@@ -7,6 +7,8 @@ namespace QuickBTTrayApp.Services
     {
         public List<string> SelectedDeviceAddresses { get; init; } = [];
         public bool EnableNotifications { get; set; } = true;
+        public bool SendMediaPlayOnConnect { get; set; } = false;
+        public bool SendMediaPauseOnDisconnect { get; set; } = false;
         public bool UseUiaConnect     { get; set; } = false;
         /// <summary>When true, disconnect uses the UI Automation path (otherwise HCI).</summary>
         public bool UseUiaDisconnect  { get; set; } = false;

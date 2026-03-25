@@ -36,6 +36,28 @@ namespace QuickBTTrayApp.ViewModels
             }
         }
 
+        public bool SendMediaPauseOnDisconnect
+        {
+            get => _trayMenuViewModel.SendMediaPauseOnDisconnect;
+            set
+            {
+                if (_trayMenuViewModel.SendMediaPauseOnDisconnect == value) return;
+                _trayMenuViewModel.SendMediaPauseOnDisconnect = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool SendMediaPlayOnConnect
+        {
+            get => _trayMenuViewModel.SendMediaPlayOnConnect;
+            set
+            {
+                if (_trayMenuViewModel.SendMediaPlayOnConnect == value) return;
+                _trayMenuViewModel.SendMediaPlayOnConnect = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string AppVersion =>
             "QuickBTTray-v" + (Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.0.0");
 
@@ -44,6 +66,8 @@ namespace QuickBTTrayApp.ViewModels
 
         public ICommand ToggleRunOnStartupCommand { get; }
         public ICommand ToggleNotificationsCommand { get; }
+        public ICommand ToggleSendMediaPlayOnConnectCommand { get; }
+        public ICommand ToggleSendMediaPauseOnDisconnectCommand { get; }
         public ICommand OpenBluetoothSettingsCommand => _trayMenuViewModel.OpenBluetoothSettingsCommand;
 
         public ConnectionMethod ConnectBy
@@ -65,6 +89,8 @@ namespace QuickBTTrayApp.ViewModels
             _runOnStartup = startupService.IsEnabled();
             ToggleRunOnStartupCommand = new RelayCommand(_ => RunOnStartup = !RunOnStartup);
             ToggleNotificationsCommand = new RelayCommand(_ => NotificationsEnabled = !NotificationsEnabled);
+            ToggleSendMediaPlayOnConnectCommand = new RelayCommand(_ => SendMediaPlayOnConnect = !SendMediaPlayOnConnect);
+            ToggleSendMediaPauseOnDisconnectCommand = new RelayCommand(_ => SendMediaPauseOnDisconnect = !SendMediaPauseOnDisconnect);
 
             _trayMenuViewModel.PropertyChanged += (s, e) =>
             {
@@ -74,6 +100,10 @@ namespace QuickBTTrayApp.ViewModels
                     OnPropertyChanged(nameof(DisconnectBy));
                 else if (e.PropertyName == nameof(TrayMenuViewModel.NotificationsEnabled))
                     OnPropertyChanged(nameof(NotificationsEnabled));
+                else if (e.PropertyName == nameof(TrayMenuViewModel.SendMediaPlayOnConnect))
+                    OnPropertyChanged(nameof(SendMediaPlayOnConnect));
+                else if (e.PropertyName == nameof(TrayMenuViewModel.SendMediaPauseOnDisconnect))
+                    OnPropertyChanged(nameof(SendMediaPauseOnDisconnect));
             };
         }
 

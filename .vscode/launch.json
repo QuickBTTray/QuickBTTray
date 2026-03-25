@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build QuickBTTrayApp",
-      "program": "${workspaceFolder}/QuickBTTrayApp/bin/Debug/net8.0-windows/QuickBTTray.dll",
+      "program": "${workspaceFolder}/QuickBTTrayApp/bin/Debug/net8.0-windows10.0.18362.0/QuickBTTray.dll",
       "args": [],
       "cwd": "${workspaceFolder}/QuickBTTrayApp",
       "stopAtEntry": false,

@@ -159,7 +159,81 @@
                 </StackPanel>
             </Button>
 
-            <!-- ── Divider ── -->
+            <!-- ── Media play on connect toggle ── -->
+            <Button Command="{Binding ToggleSendMediaPlayOnConnectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand"
+                    Padding="10,5"
+                    Margin="4,1,4,4">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding SendMediaPlayOnConnect, Mode=TwoWay}"
+                              IsHitTestVisible="False"
+                              VerticalAlignment="Center"
+                              Margin="0,0,8,0"/>
+                    <TextBlock Text="On Connect send Media Play"
+                               Foreground="{DynamicResource MenuForeground}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <!-- ── Media pause on disconnect toggle ── -->
+            <Button Command="{Binding ToggleSendMediaPauseOnDisconnectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand"
+                    Padding="10,5"
+                    Margin="4,1,4,4">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource RowHoverBackground}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding SendMediaPauseOnDisconnect, Mode=TwoWay}"
+                              IsHitTestVisible="False"
+                              VerticalAlignment="Center"
+                              Margin="0,0,8,0"/>
+                    <TextBlock Text="On Disconnect send Media Pause"
+                               Foreground="{DynamicResource MenuForeground}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+                       <!-- ── Divider ── -->
             <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" Margin="10,4,10,4"/>
 
             <!-- ── Connect via ── -->

@@ -46,6 +46,30 @@ namespace QuickBTTrayApp.ViewModels
             }
         }
 
+        public bool SendMediaPauseOnDisconnect
+        {
+            get => _appState.SendMediaPauseOnDisconnect;
+            set
+            {
+                if (_appState.SendMediaPauseOnDisconnect == value) return;
+                _appState.SendMediaPauseOnDisconnect = value;
+                _stateStore.Save(_appState);
+                OnPropertyChanged();
+            }
+        }
+
+        public bool SendMediaPlayOnConnect
+        {
+            get => _appState.SendMediaPlayOnConnect;
+            set
+            {
+                if (_appState.SendMediaPlayOnConnect == value) return;
+                _appState.SendMediaPlayOnConnect = value;
+                _stateStore.Save(_appState);
+                OnPropertyChanged();
+            }
+        }
+
         public ConnectionMethod ConnectBy
         {
             get => _connectBy;
@@ -249,9 +273,9 @@ namespace QuickBTTrayApp.ViewModels
                         ? await DispatchDisconnectAsync(d.Name, d.Address)
                         : await DispatchConnectAsync(d.Name, d.Address));
 
-                HandleResults(results);
                 ApplyToggleResultsToDevices(results);
                 await RefreshDevicesAfterToggleAsync(results);
+                await HandleResultsAsync(results);
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally
@@ -276,9 +300,9 @@ namespace QuickBTTrayApp.ViewModels
                 var result = vm.IsConnected
                     ? await DispatchDisconnectAsync(vm.RawName, vm.Address)
                     : await DispatchConnectAsync(vm.RawName, vm.Address);
-                HandleResults([result]);
                 ApplyToggleResultsToDevices([result]);
                 await RefreshDevicesAfterToggleAsync([result]);
+                await HandleResultsAsync([result]);
             }
                catch (Exception ex) { Notify("QuickBTTray", ex.Message); }
             finally
@@ -357,7 +381,7 @@ namespace QuickBTTrayApp.ViewModels
             return result;
         }
 
-        private void HandleResults(IReadOnlyList<DeviceToggleResult> results)
+        private async Task HandleResultsAsync(IReadOnlyList<DeviceToggleResult> results)
         {
             var failed = results.Where(r => r.Outcome == ToggleOutcome.Failed).ToList();
             if (failed.Count > 1)
@@ -365,10 +389,26 @@ namespace QuickBTTrayApp.ViewModels
                 var msg = $"Failed: {string.Join(", ", failed.Select(r => r.DeviceName))}. {failed[0].Message}";
                 Notify("QuickBTTray", msg);
             }
+
+            var hasSuccessfulConnect = results.Any(r => r.Outcome == ToggleOutcome.Connected);
+            if (hasSuccessfulConnect && SendMediaPlayOnConnect)
+            {
+                await Task.Delay(750);
+                var mediaResult = await GlobalMediaControlService.TrySendPlayAsync();
+                Notify("Media Debug", mediaResult.DiagnosticMessage);
+            }
+
+            var hasSuccessfulDisconnect = results.Any(r => r.Outcome == ToggleOutcome.Disconnected);
+            if (hasSuccessfulDisconnect && SendMediaPauseOnDisconnect)
+            {
+                var mediaResult = await GlobalMediaControlService.TrySendPauseAsync();
+                Notify("Media Debug", mediaResult.DiagnosticMessage);
+            }
         }
 
         private void Notify(string title, string msg)
         {
+            DebugLogService.Log($"{title}: {msg}");
             if (!NotificationsEnabled) return;
             NotifyRequested?.Invoke(title, msg);
         }

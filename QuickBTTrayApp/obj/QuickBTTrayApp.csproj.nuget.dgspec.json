@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {}
+    "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {}
   },
   "projects": {
-    "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {
-      "version": "1.0.57",
+    "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
+        "projectUniqueName": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
         "projectName": "QuickBTTray",
-        "projectPath": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
-        "packagesPath": "C:\\Users\\joel\\.nuget\\packages\\",
-        "outputPath": "C:\\_myProjects\\JH-orgs\\QuickBTTray\\QuickBTTrayApp\\obj\\",
+        "projectPath": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\QuickBTTrayApp.csproj",
+        "packagesPath": "C:\\Users\\joeln\\.nuget\\packages\\",
+        "outputPath": "C:\\_myProjects\\QuickBTTray\\QuickBTTrayApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\joel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\joeln\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0-windows"
+          "net8.0-windows10.0.18362.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0-windows7.0": {
-            "targetAlias": "net8.0-windows",
+          "net8.0-windows10.0.18362": {
+            "targetAlias": "net8.0-windows10.0.18362.0",
             "projectReferences": {}
           }
         },
@@ -41,18 +41,12 @@
         "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
-        "net8.0-windows7.0": {
-          "targetAlias": "net8.0-windows",
+        "net8.0-windows10.0.18362": {
+          "targetAlias": "net8.0-windows10.0.18362.0",
           "dependencies": {
             "Hardcodet.NotifyIcon.Wpf": {
               "target": "Package",
               "version": "[2.0.1, )"
-            },
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.25, )",
-              "autoReferenced": true
             }
           },
           "imports": [
@@ -68,20 +62,15 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[8.0.25, 8.0.25]"
+              "name": "Microsoft.Windows.SDK.NET.Ref",
+              "version": "[10.0.18362.57, 10.0.18362.57]"
             }
           ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.Windows.SDK.NET.Ref.Windows": {
               "privateAssets": "all"
             },
             "Microsoft.WindowsDesktop.App.WPF": {
@@ -89,11 +78,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x64": {
-          "#import": []
         }
       }
     }
