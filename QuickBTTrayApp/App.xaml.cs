@@ -9,11 +9,18 @@ using QuickBTTrayApp.ViewModels;
 using QuickBTTrayApp.Views;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Runtime.InteropServices;
 
 namespace QuickBTTrayApp
 {
     public partial class App : Application
     {
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT { public int X; public int Y; }
+
         private TaskbarIcon       _trayIcon        = null!;
         private TrayMenuWindow    _trayMenu        = null!;
         private TrayMenuViewModel _viewModel       = null!;
@@ -71,8 +78,13 @@ namespace QuickBTTrayApp
             // RMB: refresh device list then show menu
             _trayIcon.TrayRightMouseUp += async (s, args) =>
             {
+                GetCursorPos(out POINT cursor);
+                var anchorX = cursor.X;
+                var anchorY = cursor.Y;
+                DebugLogService.Log($"Tray RMB captured anchor: ({anchorX}, {anchorY})");
+
                 await _viewModel.RefreshDevicesAsync();
-                _trayMenu.ShowNearTaskbar();
+                _trayMenu.ShowNearTaskbar(anchorX, anchorY);
             };
 
             // LMB: trigger selected-device action immediately.
